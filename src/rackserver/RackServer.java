@@ -40,6 +40,8 @@ public class RackServer extends javax.swing.JFrame
     static ServerSocket serverSocket;
     static int porta=7777;
     
+    static RackCommandThread rackCmdThread=null;
+    
     
     public RackServer() 
     {
@@ -223,20 +225,7 @@ public class RackServer extends javax.swing.JFrame
                             //comandi da eseguire sul rack
                             if(sentence.length()>=5  && sentence.substring(0,5).equals("rack-"))
                             {
-                                String command = sentence.substring(5);
-                                RackCommandThread rackCmdThread = new RackCommandThread(command);
-                                rackCmdThread.start();  
-                                if(command.substring(0,7).equals("firefox"))
-                                {
-                                    try 
-                                    {                                                    
-                                        Robot robot = new Robot();
-                                        robot.delay(10000);
-                                        commandLineText.append("Setting fullscreen\n");
-                                        robot.keyPress(KeyEvent.VK_F11);
-                                        robot.keyRelease(KeyEvent.VK_F11);
-                                    } catch (Exception ex) { }
-                                }                 
+                                CheckCommandToExecuteOnRack(sentence.substring(5));
                             }
 
                             else if(ToPi1(sentence))
@@ -400,10 +389,34 @@ public class RackServer extends javax.swing.JFrame
     
         return (command.substring(0,3).equals("p2-") && command.length() > 3);
     }
-
+    
+    public static void CheckCommandToExecuteOnRack(String command)
+    {
+        if(command.length()>=7 && command.substring(0,7).equals("firefox"))
+        {
+            rackCmdThread = new RackCommandThread(command);
+            rackCmdThread.start(); 
+            try 
+            {                                                    
+                Robot robot = new Robot();
+                robot.delay(10000);
+                commandLineText.append("Setting fullscreen\n");
+                robot.keyPress(KeyEvent.VK_F11);
+                robot.keyRelease(KeyEvent.VK_F11);
+            } catch (Exception ex) { }
+        }
+        else if(command.equals("close"))
+        {
+            rackCmdThread.stopExecute();
+        }
+    }
+    
     public static class RackCommandThread extends Thread
     {
         String command;
+        Runtime run;
+        Process pr;
+        
         RackCommandThread(String cmd)
         {
             command = cmd;
@@ -414,7 +427,7 @@ public class RackServer extends javax.swing.JFrame
             try 
             {
                 commandLineText.append("Executing command on rack:" + command + "\n");
-                Runtime run = Runtime.getRuntime();
+                run = Runtime.getRuntime();
                 Process pr = run.exec(command);
                 pr.waitFor();
                 BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
@@ -425,6 +438,11 @@ public class RackServer extends javax.swing.JFrame
                 }
             } catch (InterruptedException ex) {} 
             catch (IOException ex) {Logger.getLogger(RackServer.class.getName()).log(Level.SEVERE, null, ex);}
+        }
+        
+        public void stopExecute()
+        {
+            pr.destroy();
         }
     }
     
