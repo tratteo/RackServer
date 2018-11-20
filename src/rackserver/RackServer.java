@@ -40,8 +40,8 @@ public class RackServer extends javax.swing.JFrame
     static ServerSocket serverSocket;
     static int porta=7777;
     
-    static RackCommandThread rackCmdThread=null;
-    
+    static RackCommandThread rackCmdThread = null;
+    static boolean firefoxRunning=false;
     
     public RackServer() 
     {
@@ -116,10 +116,11 @@ public class RackServer extends javax.swing.JFrame
         commandLineScroll.setToolTipText("");
 
         commandLineText.setEditable(false);
-        commandLineText.setBackground(new java.awt.Color(255, 233, 204));
+        commandLineText.setBackground(new java.awt.Color(255, 244, 229));
         commandLineText.setColumns(20);
         commandLineText.setFont(new Font("Droid Sans Mono", Font.PLAIN, 20));
         commandLineText.setRows(5);
+        commandLineText.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         commandLineText.setMargin(new java.awt.Insets(10, 10, 10, 10));
         commandLineScroll.setViewportView(commandLineText);
 
@@ -140,15 +141,15 @@ public class RackServer extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(39, 39, 39)
-                .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(70, 70, 70)
+                .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 984, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(101, 101, 101)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(guizPiLabel)
                         .addGap(18, 18, 18)
                         .addComponent(tratPiLabel)))
-                .addContainerGap(566, Short.MAX_VALUE))
+                .addContainerGap(101, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -177,6 +178,10 @@ public class RackServer extends javax.swing.JFrame
         String sentence;
         DefaultCaret caret = (DefaultCaret)commandLineText.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        
+        TimeOutOperation screenSaver= new TimeOutOperation();
+        screenSaver.start();
+        
         do
         {
             commandLineText.append("Starting Rack server v2.0.0\n");            
@@ -195,7 +200,7 @@ public class RackServer extends javax.swing.JFrame
                 serverSocket = new ServerSocket(numeroPorta);
                 commandLineText.append("Server socket created on port: "+ Integer.toString(numeroPorta) + "\n");
             }
-            catch(IOException e) 
+            catch(Exception e) 
             {
                 commandLineText.append("Unable to create sockets. Exception: " + e.toString() + "\n");
             }
@@ -221,53 +226,55 @@ public class RackServer extends javax.swing.JFrame
                             sentence = inFromAndroidClient.readLine();   
 
                             commandLineText.append("Command received: " + sentence + "\n");
+                            if(sentence!=null)
+                            {
+                                //comandi da eseguire sul rack
+                                if(sentence.length()>=5  && sentence.substring(0,5).equals("rack-"))
+                                {
+                                    CheckCommandToExecuteOnRack(sentence.substring(5));
+                                }
 
-                            //comandi da eseguire sul rack
-                            if(sentence.length()>=5  && sentence.substring(0,5).equals("rack-"))
-                            {
-                                CheckCommandToExecuteOnRack(sentence.substring(5));
-                            }
+                                else if(ToPi1(sentence))
+                                {
+                                    String command = sentence.substring(3, sentence.length());
+                                    if(command.equals("connect") && !connectedToP1)
+                                        ConnectPi("p1");
 
-                            else if(ToPi1(sentence))
-                            {
-                                String command = sentence.substring(3, sentence.length());
-                                if(command.equals("connect") && !connectedToP1)
-                                    ConnectPi("p1");
-                                
-                                else if(command.equals("disconnecting"))
-                                {
-                                    connectedToP1 = false;
-                                    p1Socket.close();
-                                    p1Socket = null;
-                                    tratPiLabel.setForeground(Color.RED);
+                                    else if(command.equals("disconnecting"))
+                                    {
+                                        connectedToP1 = false;
+                                        p1Socket.close();
+                                        p1Socket = null;
+                                        tratPiLabel.setForeground(Color.RED);
+                                    }
+                                    else if(!command.equals("connect") && connectedToP1)
+                                    {
+                                        commandLineText.append("Sending " + command +" to Pi1\n");
+                                        outToP1.print(command);
+                                        outToP1.flush();
+                                    }      
                                 }
-                                else if(!command.equals("connect") && connectedToP1)
+                                else if(ToPi2(sentence))
                                 {
-                                    commandLineText.append("Sending " + command +" to Pi1\n");
-                                    outToP1.print(command);
-                                    outToP1.flush();
-                                }      
+                                    String command = sentence.substring(3, sentence.length());
+                                    if(command.equals("connect") && !connectedToP2)
+                                        ConnectPi("p2");
+
+                                    else if(command.equals("disconnecting"))
+                                    {
+                                        connectedToP2 = false;
+                                        p2Socket.close();
+                                        p2Socket = null;
+                                        guizPiLabel.setForeground(Color.RED);
+                                    }
+                                    else if(!command.equals("connect") && connectedToP2)
+                                    {
+                                        commandLineText.append("Sending " + command +" to Pi2\n");
+                                        outToP2.print(command);
+                                        outToP2.flush();
+                                    }
+                                }   
                             }
-                            else if(ToPi2(sentence))
-                            {
-                                String command = sentence.substring(3, sentence.length());
-                                if(command.equals("connect") && !connectedToP2)
-                                    ConnectPi("p2");
-                                
-                                else if(command.equals("disconnecting"))
-                                {
-                                    connectedToP2 = false;
-                                    p2Socket.close();
-                                    p2Socket = null;
-                                    guizPiLabel.setForeground(Color.RED);
-                                }
-                                else if(!command.equals("connect") && connectedToP2)
-                                {
-                                    commandLineText.append("Sending " + command +" to Pi2\n");
-                                    outToP2.print(command);
-                                    outToP2.flush();
-                                }
-                            }    
                             
                         } while(!sentence.equals("disconnecting"));
 
@@ -276,7 +283,7 @@ public class RackServer extends javax.swing.JFrame
                         
                     }while(true);
                 }
-                catch (IOException e) 
+                catch (Exception e) 
                 {
                     try 
                     {
@@ -285,7 +292,7 @@ public class RackServer extends javax.swing.JFrame
                                 p1Socket.close();
                         if(p2Socket != null)
                                 p2Socket.close();
-                    } catch (IOException e1) {}
+                    } catch (Exception e1) {}
 
                     commandLineText.append("Bug:"+ e.toString() + "\n");
                     commandLineText.append("SERVER REBOOT\n");
@@ -302,17 +309,16 @@ public class RackServer extends javax.swing.JFrame
             {
                 p1Socket = new Socket("192.168.1.100", 5555);
                 outToP1 = new PrintWriter(p1Socket.getOutputStream());
-                connectedToP1 = true;
                 Thread p1Listener = new Thread(new ListenerThread(p1Socket, "p1"));
                 p1Listener.start();
                 tratPiLabel.setForeground(new Color(80, 255, 70));
                 commandLineText.append("Pi 1 connected\n");
+                connectedToP1 = true;
                 return true;
 
             } 
             catch (Exception e) 
             {
-                connectedToP1 = false;
                 commandLineText.append("Unable to connect to Pi 1\n");
                 if(connectedToAndroid)
                 {
@@ -320,6 +326,7 @@ public class RackServer extends javax.swing.JFrame
                     outToAndroidClient.flush();
                 } 
                 tratPiLabel.setForeground(Color.RED);
+                connectedToP1 = false;
                 return false;
             }
         }
@@ -394,20 +401,21 @@ public class RackServer extends javax.swing.JFrame
     {
         if(command.length()>=7 && command.substring(0,7).equals("firefox"))
         {
+            firefoxRunning=true;
             rackCmdThread = new RackCommandThread(command);
             rackCmdThread.start(); 
-            try 
-            {                                                    
-                Robot robot = new Robot();
-                robot.delay(10000);
-                commandLineText.append("Setting fullscreen\n");
-                robot.keyPress(KeyEvent.VK_F11);
-                robot.keyRelease(KeyEvent.VK_F11);
-            } catch (Exception ex) { }
+            SetFullScreen();
+            
         }
-        else if(command.equals("close"))
+        else if(command.equals("close firefox"))
         {
             rackCmdThread.stopExecute();
+            firefoxRunning=false;
+        }
+        else
+        {
+            rackCmdThread = new RackCommandThread(command);
+            rackCmdThread.start(); 
         }
     }
     
@@ -442,8 +450,82 @@ public class RackServer extends javax.swing.JFrame
         
         public void stopExecute()
         {
-            pr.destroy();
+            rackCmdThread = new RackCommandThread("pkill firefox");
+            rackCmdThread.start(); 
         }
+    }
+    
+    public static class TimeOutOperation extends Thread
+    {
+        boolean running = false;
+        int time=600;
+        RackCommandThread operationThread;
+        
+        @Override
+        public void run()
+        {
+            while(true)
+            {   
+                //System.err.println("while true");
+                try 
+                {
+                    Thread.sleep(500);
+                } catch (Exception ex) {}
+                
+                try
+                {
+                    if(!firefoxRunning)
+                    {
+                        int t=0;
+                        for(t = 0; t<time && !connectedToAndroid ; t++)
+                        {
+                            try 
+                            {
+                                Thread.sleep(1000);
+                                //System.out.println(t);
+                            } catch (Exception ex) 
+                            {
+                                System.out.println(ex);
+                            }
+                        }
+
+                        //System.err.println(connectedToAndroid);
+
+                        if (t==time && !running)
+                        {
+                            System.out.println("avvio firefox");
+                            operationThread= new RackCommandThread("firefox https://www.youtube.com/tv#/watch?v=RDfjXj5EGqI");
+                            operationThread.start();
+                            SetFullScreen();
+                            running = true;
+                        }
+                        else if(t<time && running)
+                        {
+                            operationThread = new RackCommandThread("pkill firefox");
+                            operationThread.start();
+                            System.out.println("chiudo firefox");
+                            running = false;
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    System.out.println(e);
+                }
+            }
+        }
+    }
+    
+    public static void SetFullScreen()
+    {
+        try 
+            {                                                    
+                Robot robot = new Robot();
+                robot.delay(10000);
+                commandLineText.append("Setting fullscreen\n");
+                robot.keyPress(KeyEvent.VK_F11);
+                robot.keyRelease(KeyEvent.VK_F11);
+            } catch (Exception ex) { }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
