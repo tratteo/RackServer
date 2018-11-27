@@ -28,14 +28,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.text.DefaultCaret;
 
-/**
+/*
  *
  * @author Matteo
+ * 
  */
+
 public class RackServer extends javax.swing.JFrame
 {
     static boolean connectedToP1 = false, connectedToP2 = false, connectedToAndroid = false;
-    static PrintWriter outToAndroidClient, outToP1, outToP2;
+    static PrintWriter outToAndroidClient = null, outToP1, outToP2;
     static Socket p1Socket = null, p2Socket = null;
     static ServerSocket serverSocket;
     static int porta=7777;
@@ -206,8 +208,8 @@ public class RackServer extends javax.swing.JFrame
             }
             
             commandLineText.append("Connecting available Raspberrys...\n");
-            ConnectPi("p1");
-            ConnectPi("p2");
+            UtilitiesClass.ConnectPi("p1");
+            UtilitiesClass.ConnectPi("p2");
                 try
                 {
                     do
@@ -238,7 +240,7 @@ public class RackServer extends javax.swing.JFrame
                                 {
                                     String command = sentence.substring(3, sentence.length());
                                     if(command.equals("connect") && !connectedToP1)
-                                        ConnectPi("p1");
+                                        UtilitiesClass.ConnectPi("p1");
 
                                     else if(command.equals("disconnecting"))
                                     {
@@ -258,7 +260,7 @@ public class RackServer extends javax.swing.JFrame
                                 {
                                     String command = sentence.substring(3, sentence.length());
                                     if(command.equals("connect") && !connectedToP2)
-                                        ConnectPi("p2");
+                                        UtilitiesClass.ConnectPi("p2");
 
                                     else if(command.equals("disconnecting"))
                                     {
@@ -300,91 +302,8 @@ public class RackServer extends javax.swing.JFrame
                 
         }while(true);
     }
-
-    public static  boolean ConnectPi(String pi)
-    {
-        if(pi.equals("p1"))
-        {
-            try 
-            {
-                p1Socket = new Socket("192.168.1.100", 5555);
-                outToP1 = new PrintWriter(p1Socket.getOutputStream());
-                Thread p1Listener = new Thread(new ListenerThread(p1Socket, "p1"));
-                p1Listener.start();
-                tratPiLabel.setForeground(new Color(80, 255, 70));
-                commandLineText.append("Pi 1 connected\n");
-                connectedToP1 = true;
-                return true;
-
-            } 
-            catch (Exception e) 
-            {
-                commandLineText.append("Unable to connect to Pi 1\n");
-                if(connectedToAndroid)
-                {
-                    outToAndroidClient.println("p1unable");
-                    outToAndroidClient.flush();
-                } 
-                tratPiLabel.setForeground(Color.RED);
-                connectedToP1 = false;
-                return false;
-            }
-        }
-
-        else if(pi.equals("p2"))
-        {
-            try 
-            {
-                p2Socket = new Socket("192.168.1.187", 6666);
-                outToP2 = new PrintWriter(p2Socket.getOutputStream());
-                connectedToP2 = true;
-                Thread p2Listener = new Thread(new ListenerThread(p2Socket, "p2"));
-                p2Listener.start();
-                guizPiLabel.setForeground(new Color(80, 255, 70));
-                commandLineText.append("Pi 2 connected\n");
-                return true;
-
-            } catch (Exception e)
-            {
-                connectedToP2 = false;
-                commandLineText.append("Unable to connect to Pi 2\n");
-                if(connectedToAndroid)
-                {
-                    outToAndroidClient.println("p2unable");
-                    outToAndroidClient.flush();
-                }
-                guizPiLabel.setForeground(Color.RED);
-                return false;
-            }
-        }
-        return false;
-    }
     
-    public static void DisconnectPi(String pi)
-    {
-        if(pi.equals("p1"))
-        {
-            try 
-            {
-                p1Socket.close();
-                tratPiLabel.setForeground(Color.RED);
-                connectedToP1 = false;
-                p1Socket = null;
-            } catch (IOException e) {}
-        }
-
-        else if(pi.equals("p2"))
-        {
-            try 
-            {
-                p2Socket.close();
-                guizPiLabel.setForeground(Color.RED);
-                connectedToP2 = false;
-                p2Socket = null;
-            } catch (IOException e) {}
-        }
-    }
-
+    
     public static boolean ToPi1(String command)
     {
     
@@ -531,8 +450,8 @@ public class RackServer extends javax.swing.JFrame
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane commandLineScroll;
     public static javax.swing.JTextArea commandLineText;
-    private static javax.swing.JLabel guizPiLabel;
+    public static javax.swing.JLabel guizPiLabel;
     private javax.swing.JLabel jLabel1;
-    private static javax.swing.JLabel tratPiLabel;
+    public static javax.swing.JLabel tratPiLabel;
     // End of variables declaration//GEN-END:variables
 }

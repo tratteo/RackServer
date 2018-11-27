@@ -31,13 +31,17 @@ public class ListenerThread implements Runnable
                 try
                 {
                     if(inFromPi != null)
-                        piResponse = inFromPi.readLine();						           
-                    if(piResponse.equals("p1-disconnecting"))
-                    {
-                        RackServer.DisconnectPi("p1");
-                        RackServer.commandLineText.append("P1 has interrupted connection\n");
-                    }
+                        piResponse = inFromPi.readLine();
                     
+                    if(piResponse != null)
+                    {
+                        if(piResponse.equals("p1-disconnecting"))
+                        {
+                            UtilitiesClass.DisconnectPi("p1");
+                            RackServer.commandLineText.append("P1 has interrupted connection\n");
+                            UtilitiesClass.WriteToAndroidClient("p1-interrupt");
+                        }
+                    }                  
                     
                 } catch (Exception e) {}
             }
@@ -49,14 +53,22 @@ public class ListenerThread implements Runnable
                 try
                 {
                     if(inFromPi != null)
-                        piResponse = inFromPi.readLine();				
-                    if(piResponse.equals("p2-disconnecting"))
-                    {
-                        RackServer.DisconnectPi("p2");
-                        RackServer.commandLineText.append("P2 has interrupted connection\n");
-                    }
-                   
+                        piResponse = inFromPi.readLine();
                     
+                    if(piResponse != null)
+                    {
+                        if(piResponse.equals("p2-disconnecting"))
+                        {
+                            UtilitiesClass.DisconnectPi("p2");
+                            RackServer.commandLineText.append("P2 has interrupted connection\n");
+                            UtilitiesClass.WriteToAndroidClient("p2-interrupt");
+                            
+                        }
+                        else if(piResponse.equals("p2-rainbowrunning"))
+                        {
+                            UtilitiesClass.WriteToAndroidClient("p2-rainbowrunning");
+                        }                          
+                    }                    
                 } catch (Exception e) {}
             }
         }
