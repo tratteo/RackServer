@@ -289,11 +289,16 @@ public class RackServer extends javax.swing.JFrame
                 {
                     try 
                     {
-                        serverSocket.close();
+                        UtilitiesClass.ClosingService();
                         if(p1Socket != null)
+                        {
                                 p1Socket.close();
+                        }
                         if(p2Socket != null)
+                        {
                                 p2Socket.close();
+                        }
+                        serverSocket.close();
                     } catch (Exception e1) {}
 
                     commandLineText.append("Bug:"+ e.toString() + "\n");
