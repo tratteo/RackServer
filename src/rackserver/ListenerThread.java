@@ -53,7 +53,10 @@ public class ListenerThread implements Runnable
                 try
                 {
                     if(inFromPi != null)
+                    {
                         piResponse = inFromPi.readLine();
+                        RackServer.commandLineText.append(piResponse+"\n");
+                    }
                     
                     if(piResponse != null)
                     {

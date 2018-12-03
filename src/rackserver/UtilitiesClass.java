@@ -101,4 +101,41 @@ public class UtilitiesClass
             } catch (Exception e) {}
         }
     }
+    
+    public static void ClosingService()
+    {   
+        try
+        {
+            RackServer.commandLineText.append("Sending close message to client...\n");
+            RackServer.outToAndroidClient.println("serverdown");
+            RackServer.outToAndroidClient.flush();
+        }
+        catch (Exception e) 
+        {
+            RackServer.commandLineText.append("No clients connected\n");
+        }
+
+        try
+        {
+            RackServer.commandLineText.append("Sending close message to Pi1...\n");
+            RackServer.outToP1.print("disconnecting");
+            RackServer.outToP1.flush();
+            RackServer.p1Socket.close();
+
+        } catch( Exception e) 
+        {
+            RackServer.commandLineText.append("Pi1 not connected\n");
+        }
+        try
+        {
+            RackServer.commandLineText.append("Sending close message to Pi2...\n");
+            RackServer.outToP2.print("disconnecting");
+            RackServer.outToP2.flush();
+            RackServer.p2Socket.close();
+        } 
+        catch( Exception e) 
+        {
+            RackServer.commandLineText.append("Pi2 not connected\n");
+        }
+        RackServer.commandLineText.append("Closing App\n");}
 }
