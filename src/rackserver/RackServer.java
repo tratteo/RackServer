@@ -108,6 +108,7 @@ public class RackServer extends javax.swing.JFrame
         jLabel1 = new javax.swing.JLabel();
         guizPiLabel = new javax.swing.JLabel();
         tratPiLabel = new javax.swing.JLabel();
+        temperatureLabel = new java.awt.Label();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rack Server");
@@ -137,6 +138,11 @@ public class RackServer extends javax.swing.JFrame
         tratPiLabel.setForeground(new java.awt.Color(255, 0, 0));
         tratPiLabel.setText("TratPi");
 
+        temperatureLabel.setAlignment(java.awt.Label.CENTER);
+        temperatureLabel.setEnabled(false);
+        temperatureLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
+        temperatureLabel.setText("0°");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -144,14 +150,19 @@ public class RackServer extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addGap(39, 39, 39)
                 .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 984, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(101, 101, 101)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(guizPiLabel)
-                        .addGap(18, 18, 18)
-                        .addComponent(tratPiLabel)))
-                .addContainerGap(101, Short.MAX_VALUE))
+                        .addGap(101, 101, 101)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(guizPiLabel)
+                                .addGap(18, 18, 18)
+                                .addComponent(tratPiLabel))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(43, 43, 43)
+                        .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -163,7 +174,9 @@ public class RackServer extends javax.swing.JFrame
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(guizPiLabel)
-                            .addComponent(tratPiLabel)))
+                            .addComponent(tratPiLabel))
+                        .addGap(182, 182, 182)
+                        .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(86, Short.MAX_VALUE))
         );
@@ -289,7 +302,6 @@ public class RackServer extends javax.swing.JFrame
                 {
                     try 
                     {
-                        UtilitiesClass.ClosingService();
                         if(p1Socket != null)
                         {
                                 p1Socket.close();
@@ -457,6 +469,7 @@ public class RackServer extends javax.swing.JFrame
     public static javax.swing.JTextArea commandLineText;
     public static javax.swing.JLabel guizPiLabel;
     private javax.swing.JLabel jLabel1;
+    public static java.awt.Label temperatureLabel;
     public static javax.swing.JLabel tratPiLabel;
     // End of variables declaration//GEN-END:variables
 }

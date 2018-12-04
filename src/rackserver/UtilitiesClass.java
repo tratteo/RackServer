@@ -32,12 +32,12 @@ public class UtilitiesClass
             {
                 RackServer.p1Socket = new Socket("192.168.1.100", 5555);
                 RackServer.outToP1 = new PrintWriter(RackServer.p1Socket.getOutputStream());
-                Thread p1Listener = new Thread(new ListenerThread(RackServer.p1Socket, "p1"));
-                p1Listener.start();
+                Thread p1Listener = new Thread(new ListenerThreadP1(RackServer.p1Socket));
                 RackServer.tratPiLabel.setForeground(new Color(80, 255, 70));
                 RackServer.commandLineText.append("Pi 1 connected\n");
                 RackServer.connectedToP1 = true;
                 UtilitiesClass.WriteToAndroidClient("p1-connected");
+                p1Listener.start();
                 return true;
 
             } 
@@ -57,7 +57,7 @@ public class UtilitiesClass
             {
                 RackServer.p2Socket = new Socket("192.168.1.187", 6666);
                 RackServer.outToP2 = new PrintWriter(RackServer.p2Socket.getOutputStream());
-                Thread p2Listener = new Thread(new ListenerThread(RackServer.p2Socket, "p2"));
+                Thread p2Listener = new Thread(new ListenerThreadP2(RackServer.p2Socket));
                 p2Listener.start();
                 RackServer.guizPiLabel.setForeground(new Color(80, 255, 70));
                 RackServer.commandLineText.append("Pi 2 connected\n");
