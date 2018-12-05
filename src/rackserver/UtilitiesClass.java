@@ -117,10 +117,11 @@ public class UtilitiesClass
 
         try
         {
-            RackServer.commandLineText.append("Sending close message to Pi1...\n");
+            RackServer.commandLineText.append("Sending close message to Pi1...");
             RackServer.outToP1.print("disconnecting");
             RackServer.outToP1.flush();
             RackServer.p1Socket.close();
+            RackServer.commandLineText.append("\n");
 
         } catch( Exception e) 
         {
@@ -128,10 +129,11 @@ public class UtilitiesClass
         }
         try
         {
-            RackServer.commandLineText.append("Sending close message to Pi2...\n");
+            RackServer.commandLineText.append("Sending close message to Pi2...");
             RackServer.outToP2.print("disconnecting");
             RackServer.outToP2.flush();
             RackServer.p2Socket.close();
+            RackServer.commandLineText.append("\n");
         } 
         catch( Exception e) 
         {

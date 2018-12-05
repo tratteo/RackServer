@@ -10,7 +10,6 @@ import java.net.*;
 
 public class ListenerThreadP2 implements Runnable
 {
-    String pi = null;
     String piResponse;
     static BufferedReader inFromPi = null;
 	

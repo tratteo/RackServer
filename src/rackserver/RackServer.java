@@ -109,6 +109,8 @@ public class RackServer extends javax.swing.JFrame
         guizPiLabel = new javax.swing.JLabel();
         tratPiLabel = new javax.swing.JLabel();
         temperatureLabel = new java.awt.Label();
+        clockLabel = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rack Server");
@@ -138,10 +140,14 @@ public class RackServer extends javax.swing.JFrame
         tratPiLabel.setForeground(new java.awt.Color(255, 0, 0));
         tratPiLabel.setText("TratPi");
 
-        temperatureLabel.setAlignment(java.awt.Label.CENTER);
         temperatureLabel.setEnabled(false);
         temperatureLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
         temperatureLabel.setText("0°");
+
+        clockLabel.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel2.setText("Indoor Temperature:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -149,39 +155,47 @@ public class RackServer extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(39, 39, 39)
-                .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 984, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 950, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel1)
+                        .addComponent(tratPiLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(guizPiLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(101, 101, 101)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(guizPiLabel)
-                                .addGap(18, 18, 18)
-                                .addComponent(tratPiLabel))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(44, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(clockLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(32, 32, 32)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(guizPiLabel)
-                            .addComponent(tratPiLabel))
-                        .addGap(182, 182, 182)
-                        .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(86, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(guizPiLabel)
+                                .addGap(18, 18, 18)
+                                .addComponent(tratPiLabel)
+                                .addGap(95, 95, 95)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(167, 167, 167)
+                                .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addContainerGap(103, Short.MAX_VALUE))
         );
 
-        setBounds(0, 0, 1382, 824);
+        setBounds(0, 0, 1458, 824);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -189,13 +203,16 @@ public class RackServer extends javax.swing.JFrame
     {                 
         RackServer rackServerFrame = new RackServer();
         Socket androidSocket;
-        BufferedReader inFromAndroidClient;
+        BufferedReader inFromAndroidClient=null;
         String sentence;
         DefaultCaret caret = (DefaultCaret)commandLineText.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         
         TimeOutOperation screenSaver= new TimeOutOperation();
         screenSaver.start();
+        
+        Thread clock = new Thread(new DigitalClock());
+        clock.start();
         
         do
         {
@@ -217,7 +234,7 @@ public class RackServer extends javax.swing.JFrame
             }
             catch(Exception e) 
             {
-                commandLineText.append("Unable to create sockets. Exception: " + e.toString() + "\n");
+                commandLineText.append("Unable to create sockets.\nException: " + e.toString() + "\n");
             }
             
             commandLineText.append("Connecting available Raspberrys...\n");
@@ -232,11 +249,11 @@ public class RackServer extends javax.swing.JFrame
                         connectedToAndroid = true;
                         String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
                         commandLineText.append("Connected to: " + ipString + "\n");
-
+                        outToAndroidClient = new PrintWriter(androidSocket.getOutputStream());
+                        inFromAndroidClient =  new BufferedReader(new InputStreamReader(androidSocket.getInputStream()));	
+                            
                         do
                         {
-                            outToAndroidClient = new PrintWriter(androidSocket.getOutputStream());
-                            inFromAndroidClient =  new BufferedReader(new InputStreamReader(androidSocket.getInputStream()));	
                             
                             sentence = inFromAndroidClient.readLine();   
 
@@ -294,25 +311,23 @@ public class RackServer extends javax.swing.JFrame
                         } while(!sentence.equals("disconnecting"));
 
                         connectedToAndroid = false;
+                        inFromAndroidClient.close();
                         commandLineText.append("Client: " + ipString + " disconnected\n");
                         
                     }while(true);
                 }
                 catch (Exception e) 
                 {
+                    
+                    UtilitiesClass.ClosingService();
                     try 
                     {
-                        if(p1Socket != null)
-                        {
-                                p1Socket.close();
-                        }
-                        if(p2Socket != null)
-                        {
-                                p2Socket.close();
-                        }
                         serverSocket.close();
-                    } catch (Exception e1) {}
-
+                        inFromAndroidClient.close();
+                    } catch (Exception ex) 
+                    {
+                        Logger.getLogger(RackServer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     commandLineText.append("Bug:"+ e.toString() + "\n");
                     commandLineText.append("SERVER REBOOT\n");
                 }
@@ -465,10 +480,12 @@ public class RackServer extends javax.swing.JFrame
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JLabel clockLabel;
     private javax.swing.JScrollPane commandLineScroll;
     public static javax.swing.JTextArea commandLineText;
     public static javax.swing.JLabel guizPiLabel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     public static java.awt.Label temperatureLabel;
     public static javax.swing.JLabel tratPiLabel;
     // End of variables declaration//GEN-END:variables
