@@ -7,7 +7,7 @@ package rackserver;
 
 import java.awt.Color;
 import java.io.PrintWriter;
-import java.net.Socket;
+import java.net.*;
 
 /**
  *
@@ -29,8 +29,9 @@ public class UtilitiesClass
         if(pi.equals("p1"))
         {
             try 
-            {
-                RackServer.p1Socket = new Socket("192.168.1.100", 5555);
+            { 
+                RackServer.p1Socket = new Socket();
+                RackServer.p1Socket.connect(new InetSocketAddress("192.168.1.100", 5555), 1000);
                 RackServer.outToP1 = new PrintWriter(RackServer.p1Socket.getOutputStream());
                 Thread p1Listener = new Thread(new ListenerThreadP1(RackServer.p1Socket));
                 RackServer.tratPiLabel.setForeground(new Color(80, 255, 70));
@@ -55,7 +56,8 @@ public class UtilitiesClass
         {
             try 
             {
-                RackServer.p2Socket = new Socket("192.168.1.187", 6666);
+                RackServer.p2Socket = new Socket();
+                RackServer.p2Socket.connect(new InetSocketAddress("192.168.1.187", 6666), 1000);
                 RackServer.outToP2 = new PrintWriter(RackServer.p2Socket.getOutputStream());
                 Thread p2Listener = new Thread(new ListenerThreadP2(RackServer.p2Socket));
                 p2Listener.start();
@@ -102,7 +104,7 @@ public class UtilitiesClass
         }
     }
     
-    public static void ClosingService()
+    public static void CloseService()
     {   
         try
         {

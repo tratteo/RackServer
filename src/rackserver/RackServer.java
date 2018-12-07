@@ -139,7 +139,7 @@ public class RackServer extends javax.swing.JFrame
         tratPiLabel.setForeground(new java.awt.Color(255, 0, 0));
         tratPiLabel.setText("TratPi");
 
-        clockLabel.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+        clockLabel.setFont(new java.awt.Font("Arial", 2, 48)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel2.setText("Inside Temperature:");
@@ -150,6 +150,7 @@ public class RackServer extends javax.swing.JFrame
         jScrollPane1.setBackground(new java.awt.Color(102, 255, 255));
         jScrollPane1.setAutoscrolls(true);
 
+        ClientConnectedText.setEditable(false);
         ClientConnectedText.setBackground(new java.awt.Color(204, 255, 204));
         ClientConnectedText.setColumns(20);
         ClientConnectedText.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
@@ -167,21 +168,17 @@ public class RackServer extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addGap(39, 39, 39)
                 .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 902, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel1)
-                                .addComponent(tratPiLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(guizPiLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel3))
-                            .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addComponent(tratPiLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(guizPiLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel3))
+                    .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(115, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -196,11 +193,11 @@ public class RackServer extends javax.swing.JFrame
                         .addComponent(guizPiLabel)
                         .addGap(18, 18, 18)
                         .addComponent(tratPiLabel)
-                        .addGap(18, 18, 18)
+                        .addGap(41, 41, 41)
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
+                        .addGap(35, 35, 35)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -212,10 +209,12 @@ public class RackServer extends javax.swing.JFrame
         setBounds(0, 0, 1458, 824);
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
 
     public static void main(String args[]) 
     {                 
-        RackServer rackServerFrame = new RackServer();
+        new RackServer();
         Socket androidSocket;
         String sentence;
         DefaultCaret caret = (DefaultCaret)commandLineText.getCaret();
@@ -258,11 +257,11 @@ public class RackServer extends javax.swing.JFrame
                 {
                     do
                     {
-                        commandLineText.append("Waiting for clients connection...\n");
+                        //commandLineText.append("Waiting for clients connection...\n");
                         androidSocket = serverSocket.accept();
                         connectedToAndroid = true;
                         String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
-                        commandLineText.append("Connected to: " + ipString + "\n");
+                        //commandLineText.append("Connected to: " + ipString + "\n");
                         ClientConnectedText.append(ipString+"\n");
                         outToAndroidClient = new PrintWriter(androidSocket.getOutputStream());
                         inFromAndroidClient =  new BufferedReader(new InputStreamReader(androidSocket.getInputStream()));	
@@ -271,8 +270,9 @@ public class RackServer extends javax.swing.JFrame
                         {
                             
                             sentence = inFromAndroidClient.readLine();   
-
-                            commandLineText.append("Command received: " + sentence + "\n");
+                            
+                            if(!sentence.equals("disconnecting"))
+                                commandLineText.append("Command received: " + sentence + "\n");
                             if(sentence!=null)
                             {
                                 //comandi da eseguire sul rack
@@ -321,14 +321,13 @@ public class RackServer extends javax.swing.JFrame
                                     }
                                 }
                             }
-                        } while(!sentence.equals("disconnecting"));// || !sentence.equals("suspend"));
+                        } while(!sentence.equals("disconnecting"));
 
                         connectedToAndroid = false;
                         inFromAndroidClient.close();
                         outToAndroidClient.close();
-                        //serverSocket.close();
                         
-                        commandLineText.append("Client: " + ipString + " disconnected\n");
+                        //commandLineText.append("Client: " + ipString + " disconnected\n");
                         
                         int end = ClientConnectedText.getLineEndOffset(0);
                         ClientConnectedText.replaceRange("", 0, end);
@@ -337,7 +336,7 @@ public class RackServer extends javax.swing.JFrame
                 }
                 catch (Exception e) 
                 {
-                    UtilitiesClass.ClosingService();
+                    UtilitiesClass.CloseService();
                     try 
                     {
                         serverSocket.close();
@@ -353,6 +352,8 @@ public class RackServer extends javax.swing.JFrame
                 
         }while(true);
     }
+    
+    
     
     
     public static boolean ToPi1(String command)
@@ -383,6 +384,11 @@ public class RackServer extends javax.swing.JFrame
             rackCmdThread.stopExecute();
             firefoxRunning=false;
             back.close();
+        }
+        else if(command.equals("close server"))
+        {
+            UtilitiesClass.CloseService();
+            System.exit(0);
         }
         else
         {
