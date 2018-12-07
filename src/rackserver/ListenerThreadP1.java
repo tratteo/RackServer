@@ -42,7 +42,14 @@ public class ListenerThreadP1 implements Runnable
                         UtilitiesClass.WriteToAndroidClient("p1-interrupt");
                     }
                     else
+                    {
                         RackServer.temperatureLabel.setText(piResponse + "°");
+                        try
+                        {
+                            Background.tempLabel.setText(piResponse + "°");
+                        }
+                        catch(Exception e){}
+                    }
                 }
                 else
                     RackServer.commandLineText.append("Null response\n");

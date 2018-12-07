@@ -8,6 +8,7 @@ package rackserver;
 import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 /**
  *
@@ -30,10 +31,14 @@ public class DigitalClock implements Runnable
     static String strHour;
     static String strMinute;
     //static String strSecond;
-    LocalTime time;
-    String minPrec="";
-    public DigitalClock()
+    static LocalTime time;
+    static String minPrec="";
+    static JLabel clock;
+    
+    
+    public DigitalClock(JLabel _clock)
     {
+        clock=_clock;
         time=LocalTime.now();
         hour=time.getHour();
         minute=time.getMinute();
@@ -41,7 +46,8 @@ public class DigitalClock implements Runnable
         //strSecond=Integer.toString(second);
         strMinute=Integer.toString(minute);
         strHour=Integer.toString(hour);
-        //System.out.println(hour+":"+minute);
+        
+        clock.setText(strHour+":"+strMinute);
     }
     
     @Override
@@ -49,6 +55,7 @@ public class DigitalClock implements Runnable
     {
         while(true)
         {
+            time=LocalTime.now();
             hour=time.getHour();
             minute=time.getMinute();
             
@@ -73,7 +80,10 @@ public class DigitalClock implements Runnable
     private void printClock() 
     {
         if(!strMinute.equals(minPrec))
-            RackServer.clockLabel.setText(strHour+":"+strMinute);//+":"+strSecond);
+        {
+            clock.setText(strHour+":"+strMinute);//+":"+strSecond);
+        }
+        
         minPrec=strMinute;
     }
 }
