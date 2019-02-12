@@ -102,7 +102,7 @@ public class RackServerFrame extends javax.swing.JFrame
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1)
                         .addComponent(tratPiLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(guizPiLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -148,7 +148,7 @@ public class RackServerFrame extends javax.swing.JFrame
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JTextArea ClientConnectedText;
-    public static javax.swing.JLabel clockLabel;
+    public javax.swing.JLabel clockLabel;
     private javax.swing.JScrollPane commandLineScroll;
     public javax.swing.JTextArea commandLineText;
     public javax.swing.JLabel guizPiLabel;

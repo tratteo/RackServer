@@ -5,8 +5,7 @@
  */
 package rackserver.UI;
 
-import java.awt.Color;
-import javax.swing.JLabel;
+import rackserver.Application;
 import rackserver.RunnableUtils.DigitalClock;
 
 
@@ -16,31 +15,47 @@ import rackserver.RunnableUtils.DigitalClock;
  */
 public class Overlay extends javax.swing.JFrame 
 {
-    /**
-     * Creates new form Background
-     */
-    static boolean windowCreated=false;
-    
-    public Overlay() 
+    private boolean overlayVisible;
+    private Application context;
+    public Overlay(Application context) 
     {
-        if(!windowCreated)
-        {
-            initComponents();
-            this.setVisible(true);
-            windowCreated=true;
-        }
-        else
-        {
-            this.setVisible(true);
-        }
-        
-        Thread clock = new Thread(new DigitalClock(clckLabel));
+        this.context = context;
+        initComponents();
+        initFrame();
     }
     
-    public void close()
+    private void initFrame()
     {
-        this.setVisible(false);
-        windowCreated=false;
+        overlayVisible = true;
+        new Thread(new DigitalClock(clockLabel)).start();
+        new Thread(new TemperatureThread()).start();
+        this.dispose();
+        this.setUndecorated(true);
+        this.setLocation(0,0);
+        this.setSize(180,220);
+        this.setVisible(true);
+        this.pack();
+        
+    }
+    
+    private class TemperatureThread implements Runnable
+    {     
+        @Override
+        public void run()
+        {
+            while(overlayVisible)
+            {
+                try{Thread.sleep(1000);} catch(Exception e) {};
+                System.out.println("Calculating");
+                tempLabel.setText(context.currentTemperature);              
+            }
+        }
+    }
+    
+    public void Destroy()
+    {
+        overlayVisible = false;
+        this.dispose();
     }
 
     /**
@@ -52,14 +67,15 @@ public class Overlay extends javax.swing.JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        clckLabel = new javax.swing.JLabel();
+        clockLabel = new javax.swing.JLabel();
         tempLabel = new javax.swing.JLabel();
 
         setAlwaysOnTop(true);
+        setPreferredSize(new java.awt.Dimension(180, 220));
         setResizable(false);
-        setSize(new java.awt.Dimension(200, 300));
+        setSize(new java.awt.Dimension(200, 200));
 
-        clckLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
+        clockLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
 
         tempLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
 
@@ -68,20 +84,20 @@ public class Overlay extends javax.swing.JFrame
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tempLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(clckLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tempLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(clckLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(tempLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
 
         pack();
@@ -93,7 +109,7 @@ public class Overlay extends javax.swing.JFrame
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel clckLabel;
+    private javax.swing.JLabel clockLabel;
     public static javax.swing.JLabel tempLabel;
     // End of variables declaration//GEN-END:variables
 }

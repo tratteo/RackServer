@@ -44,11 +44,7 @@ public class ListenerThreadP1 implements Runnable
                 else
                 {
                     context.frame.temperatureLabel.setText(piResponse + "°");
-                    try
-                    {
-                        Overlay.tempLabel.setText(piResponse + "°");
-                    }
-                    catch(Exception e){}
+                    context.currentTemperature = piResponse;
                 }
             }
             else

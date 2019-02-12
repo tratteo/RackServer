@@ -25,18 +25,18 @@ public class DigitalClock implements Runnable
     JLabel clock;
     
     
-    public DigitalClock(JLabel _clock)
+    public DigitalClock(JLabel clock)
     {
-        clock=_clock;
-        time=LocalTime.now();
-        hour=time.getHour();
-        minute=time.getMinute();
+        this.clock = clock;
+        time = LocalTime.now();
+        hour = time.getHour();
+        minute = time.getMinute();
         //second=time.getSecond();
         //strSecond=Integer.toString(second);
-        strMinute=Integer.toString(minute);
-        strHour=Integer.toString(hour);
+        strMinute = Integer.toString(minute);
+        strHour = Integer.toString(hour);
         
-        clock.setText(strHour+":"+strMinute);
+        this.clock.setText(strHour + ":" + strMinute);
     }
     
     @Override
@@ -44,21 +44,21 @@ public class DigitalClock implements Runnable
     {
         while(true)
         {
-            time=LocalTime.now();
-            hour=time.getHour();
-            minute=time.getMinute();
+            time = LocalTime.now();
+            hour = time.getHour();
+            minute = time.getMinute();
             
             //strSecond=Integer.toString(second);
-            strMinute=Integer.toString(minute);
-            strHour=Integer.toString(hour);
+            strMinute = Integer.toString(minute);
+            strHour = Integer.toString(hour);
             
-            if(minute<10)
+            if(minute < 10)
             {
-                strMinute="0"+Integer.toString(minute);
+                strMinute = "0" + Integer.toString(minute);
             }
-            else if(hour<10)
+            else if(hour < 10)
             {
-                strHour="0"+Integer.toString(hour);
+                strHour = "0" + Integer.toString(hour);
             }
             printClock();
         }
@@ -68,8 +68,8 @@ public class DigitalClock implements Runnable
     {
         if(!strMinute.equals(minPrec))
         {
-            clock.setText(strHour+":"+strMinute);//+":"+strSecond);
+            clock.setText(strHour + ":" + strMinute);//+":"+strSecond);
         }       
-        minPrec=strMinute;
+        minPrec = strMinute;
     }
 }

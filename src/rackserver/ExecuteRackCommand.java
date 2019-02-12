@@ -47,9 +47,4 @@ public class ExecuteRackCommand implements Runnable
         } catch (InterruptedException ex) {} 
         catch (IOException ex) {Logger.getLogger(RackServerFrame.class.getName()).log(Level.SEVERE, null, ex);}
     }
-
-    public void stopExecute()
-    {
-        new Thread(new ExecuteRackCommand("pkill firefox", context)).start();
-    }
 }

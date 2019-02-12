@@ -17,11 +17,10 @@ import rackserver.UtilitiesClass;
 public class ScreenSaver implements Runnable
 {
     boolean running = false;
-    int time=600;
+    int timeoutTime = 3;
     
     Overlay overlay;
     Application context;
-    ExecuteRackCommand rackCommand;
     
     public ScreenSaver(Application context) {this.context = context;}
     
@@ -30,49 +29,31 @@ public class ScreenSaver implements Runnable
     {
         while(true)
         {   
-            try 
-            {
-                Thread.sleep(500);
-            } catch (Exception ex) {}
-
+            try {Thread.sleep(500);} catch (Exception ex) {}
             try
             {
                 if(!context.firefoxRunning)
                 {
-                    int t=0;
-                    for(t = 0; t<time && !context.connectedToAndroid ; t++)
-                    {
-                        try 
-                        {
-                            Thread.sleep(1000);
-                            //System.out.println(t);
-                        } catch (Exception ex) 
-                        {
-                            System.out.println(ex);
-                        }
-                    }
+                    int time = 0;
+                    for(time = 0; time < timeoutTime && !context.connectedToAndroid ; time++)
+                        try {Thread.sleep(1000);} catch (Exception ex) {System.out.println(ex);}
 
-                    //System.err.println(connectedToAndroid);
-
-                    if (t==time && !running)
+                    if (time == timeoutTime && !running)
                     {
-                        rackCommand= new ExecuteRackCommand("firefox https://www.youtube.com/tv#/watch?v=RDfjXj5EGqI", context);
+                        new Thread(new ExecuteRackCommand("firefox https://www.youtube.com/tv#/watch?v=RDfjXj5EGqI", context)).start();
                         UtilitiesClass.getInstance().SetFullScreen();
                         running = true;
-                        overlay = new Overlay();
+                        overlay = new Overlay(context);
                     }
-                    else if(t<time && running)
+                    else if(time < timeoutTime && running)
                     {
-                        rackCommand = new ExecuteRackCommand("pkill firefox", context);
-                        overlay.close();
+                        new Thread(new ExecuteRackCommand("pkill firefox", context)).start();
+                        overlay.Destroy();
                         running = false;
                     }
                 }
             }
-            catch(Exception e)
-            {
-                System.out.println(e);
-            }
+            catch(Exception e) {System.out.println(e);}
         }
     }
 }

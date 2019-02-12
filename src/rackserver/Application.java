@@ -17,6 +17,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import rackserver.RunnableUtils.ScreenSaver;
 /**
  *
  * @author Matteo
@@ -35,16 +36,15 @@ public class Application implements Runnable
     PrintWriter outToAndroidClient = null, outToP1 = null, outToP2 = null;
     BufferedReader inFromAndroidClient=null;
     final int portNumber=7777;
-    
-    ExecuteRackCommand rackCommand;
+
     Overlay overlay;
+    public String currentTemperature;
     String sentence; 
             
     @Override
     public void run()
     {   
-        //ScreenSaver screenSaver = new ScreenSaver(this);
-        
+        new Thread(new ScreenSaver(this)).start();
         new Thread(new DigitalClock(frame.clockLabel)).start();
         
         frame.addWindowListener(new WindowAdapter()
@@ -195,17 +195,16 @@ public class Application implements Runnable
     {
         if(command.length()>=7 && command.substring(0,7).equals("firefox"))
         {
-            firefoxRunning=true;
-            rackCommand = new ExecuteRackCommand(command, this);
-            new Thread(rackCommand).start();
+            firefoxRunning = true;
+            new Thread(new ExecuteRackCommand(command, this)).start();
             UtilitiesClass.getInstance().SetFullScreen();
-            overlay= new Overlay();       
+            overlay= new Overlay(this);       
         }
         else if(command.equals("close firefox"))
         {
-            rackCommand.stopExecute();
-            firefoxRunning=false;
-            overlay.close();
+            new Thread(new ExecuteRackCommand("pkill firefox", this)).start();
+            firefoxRunning = false;
+            overlay.Destroy();
         }
         else if(command.equals("close server"))
         {
@@ -214,8 +213,7 @@ public class Application implements Runnable
         }
         else
         {
-            rackCommand = new ExecuteRackCommand(command, this);
-            new Thread(rackCommand).start();
+            new Thread(new ExecuteRackCommand(command, this)).start();
         }
     }
 }
