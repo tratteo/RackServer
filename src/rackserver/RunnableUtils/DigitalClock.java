@@ -3,37 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver;
+package rackserver.RunnableUtils;
 
 import java.time.LocalTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JLabel;
 
 /**
- *
  * @author aguiz
- */
-/* 
-   Classe per simulare il comportamento di un orologio.
-   La classe contiene un costruttore con tre argomenti (ore, min, sec)
-   e un metodo public che incrementa i secondi di una unita' e un 
-   metodo che stampa l'ora. 
+ * Create digital clock behaviour and print it on a label
 */
-
-
 public class DigitalClock implements Runnable
 {
-    // testo la classe:
-    static int hour;
-    static int minute;
+    int hour;
+    int minute;
     //static int second;
-    static String strHour;
-    static String strMinute;
+    String strHour;
+    String strMinute;
     //static String strSecond;
-    static LocalTime time;
-    static String minPrec="";
-    static JLabel clock;
+    LocalTime time;
+    String minPrec="";
+    JLabel clock;
     
     
     public DigitalClock(JLabel _clock)
@@ -71,8 +60,6 @@ public class DigitalClock implements Runnable
             {
                 strHour="0"+Integer.toString(hour);
             }
-            
-            //System.err.println(strHour+":"+strMinute);//+":"+strSecond);
             printClock();
         }
     }
@@ -82,8 +69,7 @@ public class DigitalClock implements Runnable
         if(!strMinute.equals(minPrec))
         {
             clock.setText(strHour+":"+strMinute);//+":"+strSecond);
-        }
-        
+        }       
         minPrec=strMinute;
     }
 }

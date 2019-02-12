@@ -5,6 +5,7 @@
  */
 package rackserver;
 
+import rackserver.UI.Overlay;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
@@ -15,49 +16,43 @@ import java.net.Socket;
  */
 public class ListenerThreadP1 implements Runnable
 {
-    String piResponse;
+
+    Application context;
     static BufferedReader inFromPi = null;
+    String piResponse;
 	
-    ListenerThreadP1(Socket _socket)
+    public ListenerThreadP1(Socket _socket, Application context)
     {
+        this.context = context;
         try{ inFromPi = new BufferedReader(new InputStreamReader(_socket.getInputStream())); } catch (Exception e) {}
     }
 	
     @Override
     public void run()
-    {
-        
-        while(RackServer.connectedToP1)
+    { 
+        while(context.connectedToP1)
         {
-            try
+            try {piResponse = inFromPi.readLine();} catch(Exception e) {System.out.println(e);}
+            if(piResponse != null)
             {
-                piResponse = inFromPi.readLine();
-
-                if(piResponse != null)
+                if(piResponse.equals("disconnecting"))
                 {
-                    if(piResponse.equals("disconnecting"))
-                    {
-                        UtilitiesClass.DisconnectPi("p1");
-                        RackServer.commandLineText.append("P1 has interrupted connection\n");
-                        UtilitiesClass.WriteToAndroidClient("p1-interrupt");
-                    }
-                    else
-                    {
-                        RackServer.temperatureLabel.setText(piResponse + "°");
-                        try
-                        {
-                            Background.tempLabel.setText(piResponse + "°");
-                        }
-                        catch(Exception e){}
-                    }
+                    UtilitiesClass.getInstance().DisconnectPi("p1", context);
+                    context.frame.commandLineText.append("P1 has interrupted connection\n");
+                    UtilitiesClass.getInstance().WriteToAndroidClient("p1-interrupt", context);
                 }
                 else
-                    RackServer.commandLineText.append("Null response\n");
+                {
+                    context.frame.temperatureLabel.setText(piResponse + "°");
+                    try
+                    {
+                        Overlay.tempLabel.setText(piResponse + "°");
+                    }
+                    catch(Exception e){}
+                }
             }
-            catch (Exception e) 
-            {
-                RackServer.commandLineText.append(e.toString() + "\n");
-            }
+            else
+                context.frame.commandLineText.append("Null response\n");
         }
     }
 }

@@ -7,47 +7,43 @@ package rackserver;
 
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class ListenerThreadP2 implements Runnable
 {
+    Application context;
+    //BufferedReader inFromPi = null;
+    Scanner inFromPi = null;
     String piResponse;
-    static BufferedReader inFromPi = null;
 	
-    ListenerThreadP2(Socket _socket)
+    ListenerThreadP2(Socket _socket, Application context)
     {
-        try{ inFromPi = new BufferedReader(new InputStreamReader(_socket.getInputStream())); } catch (Exception e) {}
+        this.context = context;
+        try{ inFromPi = new Scanner(new InputStreamReader(_socket.getInputStream())); } catch (Exception e) {System.out.println(e);}
     }
 	
     @Override
     public void run()
-    {
-        
-         while(RackServer.connectedToP2)
+    { 
+         while(context.connectedToP2)
         {
-            try
+            try {piResponse = inFromPi.nextLine();} catch(Exception e) {System.out.println(e);}
+            if(piResponse != null)
             {
-                piResponse = inFromPi.readLine();
-                if(piResponse != null)
+                if(piResponse.equals("disconnecting"))
                 {
-                    if(piResponse.equals("disconnecting"))
-                    {
-                        UtilitiesClass.DisconnectPi("p2");
-                        RackServer.commandLineText.append("P2 has interrupted connection\n");
-                        UtilitiesClass.WriteToAndroidClient("p2-interrupt");
+                    UtilitiesClass.getInstance().DisconnectPi("p2", context);
+                    context.frame.commandLineText.append("P2 has interrupted connection\n");
+                    UtilitiesClass.getInstance().WriteToAndroidClient("p2-interrupt", context);
 
-                    }
-                    else if(piResponse.equals("rainbowrunning"))
-                    {
-                        UtilitiesClass.WriteToAndroidClient("rainbowrunning");
-                    }                          
-                }                    
-                else
-                    RackServer.commandLineText.append("Null response\n");
-            } 
-            catch (Exception e) 
-            {
-                RackServer.commandLineText.append(e.toString() + "\n");
-            }
+                }
+                else if(piResponse.equals("rainbowrunning"))
+                {
+                    UtilitiesClass.getInstance().WriteToAndroidClient("rainbowrunning", context);
+                }                     
+            }                    
+            else
+                context.frame.commandLineText.append("Null response\n");
         }
     }
 }

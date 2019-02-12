@@ -3,31 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver;
+package rackserver.UI;
 
 import java.awt.Color;
 import javax.swing.JLabel;
+import rackserver.RunnableUtils.DigitalClock;
 
 
 /**
  *
  * @author aguiz
  */
-public class Background extends javax.swing.JFrame 
+public class Overlay extends javax.swing.JFrame 
 {
     /**
      * Creates new form Background
      */
-    static boolean windowCreate=false;
+    static boolean windowCreated=false;
     
-    public Background() 
+    public Overlay() 
     {
-        if(!windowCreate)
+        if(!windowCreated)
         {
             initComponents();
             this.setVisible(true);
-            RackServer.commandLineText.append("Apro la finestrella");
-            windowCreate=true;
+            windowCreated=true;
         }
         else
         {
@@ -40,7 +40,7 @@ public class Background extends javax.swing.JFrame
     public void close()
     {
         this.setVisible(false);
-        windowCreate=false;
+        windowCreated=false;
     }
 
     /**
