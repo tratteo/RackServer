@@ -5,6 +5,7 @@
  */
 package rackserver;
 
+import rackserver.RunnableUtils.ExecuteRackCommand;
 import rackserver.RunnableUtils.DigitalClock;
 import rackserver.UI.RackServerFrame;
 import rackserver.UI.Overlay;
@@ -24,7 +25,7 @@ import rackserver.RunnableUtils.ScreenSaver;
  */
 public class Application implements Runnable
 {   
-    RackServerFrame frame;
+    public RackServerFrame frame;
     public Application(RackServerFrame frame) {this.frame = frame;}
     
     public boolean connectedToP1 = false, connectedToP2 = false, connectedToAndroid = false, firefoxRunning=false;
@@ -38,7 +39,7 @@ public class Application implements Runnable
     final int portNumber=7777;
 
     Overlay overlay;
-    public String currentTemperature;
+    public String currentTemperature = null;
     String sentence; 
             
     @Override

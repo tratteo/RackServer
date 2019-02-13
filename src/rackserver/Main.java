@@ -23,6 +23,7 @@ public class Main
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setSize(maxBoundSize.getSize());
         frame.setVisible(true); 
+        
         new Thread(new Application(frame)).start();
     }   
 }

@@ -3,23 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver;
+package rackserver.RunnableUtils;
 
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
+import rackserver.Application;
+import rackserver.UtilitiesClass;
 
 public class ListenerThreadP2 implements Runnable
 {
     Application context;
-    //BufferedReader inFromPi = null;
-    Scanner inFromPi = null;
+    BufferedReader inFromPi = null;
     String piResponse;
 	
-    ListenerThreadP2(Socket _socket, Application context)
+    public ListenerThreadP2(Socket _socket, Application context)
     {
         this.context = context;
-        try{ inFromPi = new Scanner(new InputStreamReader(_socket.getInputStream())); } catch (Exception e) {System.out.println(e);}
+        try{ inFromPi = new BufferedReader(new InputStreamReader(_socket.getInputStream())); } catch (Exception e) {System.out.println(e);}
     }
 	
     @Override
@@ -27,7 +27,7 @@ public class ListenerThreadP2 implements Runnable
     { 
          while(context.connectedToP2)
         {
-            try {piResponse = inFromPi.nextLine();} catch(Exception e) {System.out.println(e);}
+            try {piResponse = inFromPi.readLine();} catch(Exception e) {System.out.println(e);}
             if(piResponse != null)
             {
                 if(piResponse.equals("disconnecting"))

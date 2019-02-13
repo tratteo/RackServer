@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver;
+package rackserver.RunnableUtils;
 
+import java.awt.Color;
 import rackserver.UI.Overlay;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import rackserver.Application;
+import rackserver.UtilitiesClass;
 
 /**
  *
@@ -18,7 +21,7 @@ public class ListenerThreadP1 implements Runnable
 {
 
     Application context;
-    static BufferedReader inFromPi = null;
+    BufferedReader inFromPi = null;
     String piResponse;
 	
     public ListenerThreadP1(Socket _socket, Application context)
@@ -41,10 +44,12 @@ public class ListenerThreadP1 implements Runnable
                     context.frame.commandLineText.append("P1 has interrupted connection\n");
                     UtilitiesClass.getInstance().WriteToAndroidClient("p1-interrupt", context);
                 }
-                else
+                else if(UtilitiesClass.getInstance().isStringFloat(piResponse))
                 {
-                    context.frame.temperatureLabel.setText(piResponse + "°");
                     context.currentTemperature = piResponse;
+                    context.frame.temperatureLabel.setText(piResponse + "°");
+                    int[] rgbValues = UtilitiesClass.getInstance().getRGBValuesFromTemperature(Float.parseFloat(piResponse));
+                    context.frame.temperatureLabel.setForeground(new Color(rgbValues[0], rgbValues[1], rgbValues[2]));
                 }
             }
             else

@@ -5,6 +5,8 @@
  */
 package rackserver;
 
+import rackserver.RunnableUtils.ListenerThreadP2;
+import rackserver.RunnableUtils.ListenerThreadP1;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -175,5 +177,58 @@ public final class UtilitiesClass
                 robot.keyPress(KeyEvent.VK_F11);
                 robot.keyRelease(KeyEvent.VK_F11);
             } catch (Exception ex) { }
+    }
+    
+    public int[] getRGBValuesFromTemperature(float temperature)
+    {            
+        int[] rgbValues = new int[3];
+        float red = 0, green = 0, blue = 0;
+
+        if(temperature < 12f)
+        {
+            red = 0;
+            green = 0;
+            blue = 255f;
+        }
+        else if( temperature >= 12 && temperature < 18f)
+        {
+            red = 0;
+            green = 42.5f * (temperature - 12f);
+            blue = 255f;
+        }
+        else if(temperature >= 18f && temperature < 24f)
+        {
+            red = 0;
+            green = 255f;
+            blue = -42.5f * (temperature - 24f);
+        }
+        else if(temperature >= 24f && temperature < 30f)
+        {
+            red = 42.5f * (temperature - 24f);
+            green = 255f;
+            blue = 0;
+        }
+        else if(temperature >= 30f && temperature <= 36f)
+        {
+            red = 255f;
+            green = -42.5f * (temperature - 36f);
+            blue = 0;
+        }     
+        else if(temperature > 36f)
+        {
+            red = 255f;
+            green = 0;
+            blue = 0;
+        }
+        
+        rgbValues[0] = (int)red;
+        rgbValues[1] = (int)green;
+        rgbValues[2] = (int)blue;
+        return rgbValues;
+    }
+    
+    public boolean isStringFloat(String numberString)
+    {
+        try{ Float.parseFloat(numberString); return true;} catch(Exception e) {return false;}
     }
 }

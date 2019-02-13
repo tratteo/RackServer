@@ -139,13 +139,7 @@ public class RackServerFrame extends javax.swing.JFrame
 
         setBounds(0, 0, 1458, 824);
     }// </editor-fold>//GEN-END:initComponents
-
-    
- 
-    
-    
-
-    
+   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JTextArea ClientConnectedText;
     public javax.swing.JLabel clockLabel;
