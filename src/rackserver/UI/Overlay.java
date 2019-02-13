@@ -4,14 +4,11 @@
  * and open the template in the editor.
  */
 package rackserver.UI;
-
 import java.awt.Color;
-import java.util.Scanner;
+import javax.swing.*;
 import rackserver.Application;
 import rackserver.RunnableUtils.DigitalClock;
 import rackserver.UtilitiesClass;
-
-
 /**
  *
  * @author aguiz
@@ -29,15 +26,15 @@ public class Overlay extends javax.swing.JFrame
     
     private void initFrame()
     {
-        overlayVisible = true;
-        new Thread(new DigitalClock(clockLabel)).start();
-        new Thread(new TemperatureThread()).start();
         this.dispose();
         this.setUndecorated(true);
         this.setLocation(30,0);
         this.setSize(190,150);
         this.setVisible(true);
-        this.pack();      
+        this.pack();     
+        overlayVisible = true;
+        new Thread(new DigitalClock(clockLabel)).start();
+        new Thread(new TemperatureThread()).start();
     }
     
     private class TemperatureThread implements Runnable
@@ -72,28 +69,33 @@ public class Overlay extends javax.swing.JFrame
         tempLabel = new javax.swing.JLabel();
 
         setAlwaysOnTop(true);
+        setBackground(new java.awt.Color(255, 255, 255));
+        setMinimumSize(new java.awt.Dimension(180, 160));
+        setPreferredSize(new java.awt.Dimension(180, 160));
         setResizable(false);
-        setSize(new java.awt.Dimension(200, 200));
+        setSize(new java.awt.Dimension(180, 160));
 
-        clockLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
+        clockLabel.setFont(new java.awt.Font("Tahoma", 2, 36)); // NOI18N
         clockLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        clockLabel.setText("00:00");
 
-        tempLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
+        tempLabel.setFont(new java.awt.Font("Tahoma", 2, 36)); // NOI18N
         tempLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tempLabel.setText("20.0°");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(clockLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(tempLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+            .addComponent(clockLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+            .addComponent(tempLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addComponent(tempLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(tempLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();

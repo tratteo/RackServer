@@ -7,7 +7,6 @@ package rackserver.RunnableUtils;
 
 import rackserver.Application;
 import rackserver.UI.Overlay;
-import rackserver.UI.TransparentOverlay;
 import rackserver.UtilitiesClass;
 
 /**
@@ -40,15 +39,14 @@ public class ScreenSaver implements Runnable
 
                     if (time == timeoutTime && !running)
                     {
-                        //new Thread(new ExecuteRackCommand("firefox https://www.youtube.com/tv#/watch?v=RDfjXj5EGqI", context)).start();
-                        //UtilitiesClass.getInstance().SetFullScreen();
+                        new Thread(new ExecuteRackCommand("firefox https://www.youtube.com/tv#/watch?v=RDfjXj5EGqI", context)).start();
+                        UtilitiesClass.getInstance().SetFullScreen();
                         running = true;
-                        TransparentOverlay ov = new TransparentOverlay();
                         overlay = new Overlay(context);
                     }
                     else if(time < timeoutTime && running)
                     {
-                        //new Thread(new ExecuteRackCommand("pkill firefox", context)).start();
+                        new Thread(new ExecuteRackCommand("pkill firefox", context)).start();
                         overlay.Destroy();
                         running = false;
                     }
