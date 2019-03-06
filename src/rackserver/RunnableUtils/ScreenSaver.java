@@ -16,7 +16,7 @@ import rackserver.UtilitiesClass;
 public class ScreenSaver implements Runnable
 {
     boolean running = false;
-    int timeoutTime = 3;
+    int timeoutTime = 60;
     
     Overlay overlay;
     Application context;
@@ -39,7 +39,7 @@ public class ScreenSaver implements Runnable
 
                     if (time == timeoutTime && !running)
                     {
-                        new Thread(new ExecuteRackCommand("firefox https://www.youtube.com/tv#/watch?v=RDfjXj5EGqI", context)).start();
+                        new Thread(new ExecuteRackCommand("firefox https://www.youtube.com/tv#/watch/video/control?v=sH05pHZuptA", context)).start();
                         UtilitiesClass.getInstance().SetFullScreen();
                         running = true;
                         overlay = new Overlay(context);

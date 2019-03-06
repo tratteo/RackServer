@@ -5,8 +5,7 @@
  */
 package rackserver;
 
-import rackserver.RunnableUtils.ExecuteRackCommand;
-import rackserver.RunnableUtils.DigitalClock;
+import rackserver.RunnableUtils.*;
 import rackserver.UI.RackServerFrame;
 import rackserver.UI.Overlay;
 import java.awt.event.WindowAdapter;
@@ -18,7 +17,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rackserver.RunnableUtils.ScreenSaver;
 /**
  *
  * @author Matteo
@@ -26,8 +24,6 @@ import rackserver.RunnableUtils.ScreenSaver;
 public class Application implements Runnable
 {   
     public RackServerFrame frame;
-    public Application(RackServerFrame frame) {this.frame = frame;}
-    
     public boolean connectedToP1 = false, connectedToP2 = false, connectedToAndroid = false, firefoxRunning=false;
     
     ServerSocket serverSocket = null;
@@ -35,13 +31,16 @@ public class Application implements Runnable
     Socket androidSocket;
     
     PrintWriter outToAndroidClient = null, outToP1 = null, outToP2 = null;
-    BufferedReader inFromAndroidClient=null;
-    final int portNumber=7777;
+    private BufferedReader inFromAndroidClient=null;
+    private final int portNumber=7777;
 
-    Overlay overlay;
+    private Overlay overlay;
     public String currentTemperature = null;
-    String sentence; 
-            
+    private String sentence; 
+    private Application instance;
+    
+    public Application(RackServerFrame frame) {this.frame = frame; instance = this;}
+    
     @Override
     public void run()
     {   
@@ -53,49 +52,14 @@ public class Application implements Runnable
             @Override
             public void windowClosing(WindowEvent event)
             {
-                try
-                {
-                    frame.commandLineText.append("Sending close message to client...\n");
-                    outToAndroidClient.println("serverdown");
-                    outToAndroidClient.flush();
-                }
-                catch (Exception e) 
-                {
-                    frame.commandLineText.append("No clients connected\n");
-                }
-
-                try
-                {
-                    frame.commandLineText.append("Sending close message to Pi1...\n");
-                    outToP1.print("disconnecting");
-                    outToP1.flush();
-                    p1Socket.close();
-                    connectedToP1 = false;
-
-                } catch( Exception e) 
-                {
-                    frame.commandLineText.append("Pi1 not connected\n");
-                }
-                try
-                {
-                    frame.commandLineText.append("Sending close message to Pi2...\n");
-                    outToP2.print("disconnecting");
-                    outToP2.flush();
-                    p2Socket.close();
-                    connectedToP2 = false;
-                } 
-                catch( Exception e) 
-                {
-                    frame.commandLineText.append("Pi2 not connected\n");
-                }
-                frame.commandLineText.append("Closing App\n");
+                UtilitiesClass.getInstance().CloseService(instance);
                 System.exit(0);
             }
         });
         
         do
         {
-            frame.commandLineText.append("Starting Rack server v2.0.0\n");            
+            frame.commandLineText.append("Starting Rack-Server v2.0.0\n");            
             try
             {
                 serverSocket = new ServerSocket(portNumber);
@@ -106,9 +70,10 @@ public class Application implements Runnable
                 frame.commandLineText.append("Unable to create sockets.\nException: " + e.toString() + "\n");
             }
             
-            frame.commandLineText.append("Connecting available Raspberrys...\n");
-            UtilitiesClass.getInstance().ConnectPi("p1", this);
-            UtilitiesClass.getInstance().ConnectPi("p2", this);
+            frame.commandLineText.append("Starting thread to connect Raspberrys\n");
+            
+            new Thread(new ConnectPisRunnable(this)).start();
+            
             try
             {
                 do
@@ -117,7 +82,7 @@ public class Application implements Runnable
                     androidSocket = serverSocket.accept();
                     connectedToAndroid = true;
                     String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
-                    frame.ClientConnectedText.append(ipString + "\n");
+                    frame.conectedClientText.append(ipString + "\n");
                     outToAndroidClient = new PrintWriter(androidSocket.getOutputStream());
                     inFromAndroidClient =  new BufferedReader(new InputStreamReader(androidSocket.getInputStream()));	
 
@@ -168,8 +133,8 @@ public class Application implements Runnable
                     inFromAndroidClient.close();
                     outToAndroidClient.close();
 
-                    int endPoint = frame.ClientConnectedText.getLineEndOffset(0);
-                    frame.ClientConnectedText.replaceRange("", 0, endPoint);
+                    int endPoint = frame.conectedClientText.getLineEndOffset(0);
+                    frame.conectedClientText.replaceRange("", 0, endPoint);
 
                 }while(true);
             }
@@ -186,7 +151,7 @@ public class Application implements Runnable
                 }
                 frame.commandLineText.append("Bug:"+ e.toString() + "\n");
                 frame.commandLineText.append("SERVER REBOOT\n");
-                frame.ClientConnectedText.setText("");
+                frame.conectedClientText.setText("");
             }
                 
         }while(true);

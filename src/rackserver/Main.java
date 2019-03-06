@@ -19,11 +19,17 @@ public class Main
     public static void main(String args[]) 
     {         
         RackServerFrame frame = new RackServerFrame();
+        
         Rectangle maxBoundSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setSize(maxBoundSize.getSize());
+        frame.setUndecorated(true);
         frame.setVisible(true); 
         
-        new Thread(new Application(frame)).start();
+        Application application = new Application(frame);
+        FrameMouseListener listener = new FrameMouseListener(frame, application);
+        frame.setMouseListener(listener);
+        
+        new Thread(application).start();
     }   
 }

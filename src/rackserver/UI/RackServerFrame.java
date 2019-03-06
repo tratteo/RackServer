@@ -8,6 +8,7 @@ package rackserver.UI;
 
 import java.awt.*;
 import javax.swing.text.DefaultCaret;
+import rackserver.FrameMouseListener;
 
 /*
  *
@@ -25,6 +26,12 @@ public class RackServerFrame extends javax.swing.JFrame
         tratPiLabel.setForeground(Color.RED);
         guizPiLabel.setForeground(Color.RED);  
     }
+    
+    public void setMouseListener(FrameMouseListener listener) 
+    {
+        exitLabel.addMouseListener(listener);
+        minimizeLabel.addMouseListener(listener);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -38,12 +45,15 @@ public class RackServerFrame extends javax.swing.JFrame
         clockLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        ClientConnectedText = new javax.swing.JTextArea();
+        clientsScrollArea = new javax.swing.JScrollPane();
+        conectedClientText = new javax.swing.JTextArea();
         temperatureLabel = new javax.swing.JLabel();
+        exitLabel = new javax.swing.JLabel();
+        minimizeLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rack Server");
+        setBackground(new java.awt.Color(51, 51, 255));
         setIconImages(null);
         setResizable(false);
         setSize(new java.awt.Dimension(1360, 500));
@@ -78,19 +88,23 @@ public class RackServerFrame extends javax.swing.JFrame
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel3.setText("Client Connected:");
 
-        jScrollPane1.setBackground(new java.awt.Color(102, 255, 255));
-        jScrollPane1.setAutoscrolls(true);
+        clientsScrollArea.setBackground(new java.awt.Color(102, 255, 255));
+        clientsScrollArea.setAutoscrolls(true);
 
-        ClientConnectedText.setEditable(false);
-        ClientConnectedText.setBackground(new java.awt.Color(204, 255, 204));
-        ClientConnectedText.setColumns(20);
-        ClientConnectedText.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        ClientConnectedText.setRows(5);
-        ClientConnectedText.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        jScrollPane1.setViewportView(ClientConnectedText);
+        conectedClientText.setEditable(false);
+        conectedClientText.setBackground(new java.awt.Color(204, 255, 204));
+        conectedClientText.setColumns(20);
+        conectedClientText.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        conectedClientText.setRows(5);
+        conectedClientText.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        clientsScrollArea.setViewportView(conectedClientText);
 
         temperatureLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
         temperatureLabel.setText("0°");
+
+        exitLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit_18dp.png"))); // NOI18N
+
+        minimizeLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minimize_18dp.png"))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -108,14 +122,24 @@ public class RackServerFrame extends javax.swing.JFrame
                         .addComponent(guizPiLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel3))
                     .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(clientsScrollArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(115, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(minimizeLabel)
+                .addGap(18, 18, 18)
+                .addComponent(exitLabel)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(32, 32, 32)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(minimizeLabel)
+                    .addComponent(exitLabel))
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(commandLineScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -127,29 +151,31 @@ public class RackServerFrame extends javax.swing.JFrame
                         .addGap(41, 41, 41)
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(clientsScrollArea, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(35, 35, 35)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(103, Short.MAX_VALUE))
+                .addContainerGap(72, Short.MAX_VALUE))
         );
 
         setBounds(0, 0, 1458, 824);
     }// </editor-fold>//GEN-END:initComponents
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JTextArea ClientConnectedText;
+    private javax.swing.JScrollPane clientsScrollArea;
     public javax.swing.JLabel clockLabel;
     private javax.swing.JScrollPane commandLineScroll;
     public javax.swing.JTextArea commandLineText;
+    public javax.swing.JTextArea conectedClientText;
+    public javax.swing.JLabel exitLabel;
     public javax.swing.JLabel guizPiLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JLabel minimizeLabel;
     public javax.swing.JLabel temperatureLabel;
     public javax.swing.JLabel tratPiLabel;
     // End of variables declaration//GEN-END:variables

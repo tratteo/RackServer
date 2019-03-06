@@ -18,7 +18,7 @@ import java.net.*;
  */
 public final class UtilitiesClass 
 {
-    public static UtilitiesClass instance = null;
+    private static UtilitiesClass instance = null;
     private UtilitiesClass() {}
     public static UtilitiesClass getInstance() 
     {
@@ -27,6 +27,7 @@ public final class UtilitiesClass
         
         return instance;
     }
+    
     
     public void WriteToAndroidClient(String message, Application context)
     {
@@ -39,7 +40,7 @@ public final class UtilitiesClass
     
     public boolean ConnectPi(String pi, Application context)
     {
-        if(pi.equals("p1"))
+        if(pi.equals("p1") && !context.connectedToP1)
         {
             try 
             { 
@@ -57,7 +58,6 @@ public final class UtilitiesClass
             } 
             catch (Exception e) 
             {
-                context.frame.commandLineText.append("Unable to connect to Pi 1\n");
                 WriteToAndroidClient("p1-unable", context);
                 context.frame.tratPiLabel.setForeground(Color.RED);
                 context.connectedToP1 = false;
@@ -65,7 +65,7 @@ public final class UtilitiesClass
             }
         }
 
-        else if(pi.equals("p2"))
+        else if(pi.equals("p2") && !context.connectedToP2)
         {
             try 
             {
@@ -83,7 +83,6 @@ public final class UtilitiesClass
             } catch (Exception e)
             {
                 context.connectedToP2 = false;
-                context.frame.commandLineText.append("Unable to connect to Pi 2\n");
                 WriteToAndroidClient("p2-unable", context);
                 context.frame.guizPiLabel.setForeground(Color.RED);
                 return false;
@@ -184,34 +183,34 @@ public final class UtilitiesClass
         int[] rgbValues = new int[3];
         float red = 0, green = 0, blue = 0;
 
-        if(temperature < 12f)
+        if(temperature < 10f)
         {
             red = 0;
             green = 0;
             blue = 255f;
         }
-        else if( temperature >= 12 && temperature < 18f)
+        else if( temperature >= 10 && temperature < 16f)
         {
             red = 0;
-            green = 42.5f * (temperature - 12f);
+            green = 42.5f * (temperature - 10f);
             blue = 255f;
         }
-        else if(temperature >= 18f && temperature < 24f)
+        else if(temperature >= 16f && temperature < 20f)
         {
             red = 0;
             green = 255f;
-            blue = -42.5f * (temperature - 24f);
+            blue = -63.75f * (temperature - 20f);
         }
-        else if(temperature >= 24f && temperature < 30f)
+        else if(temperature >= 20f && temperature < 25f)
         {
-            red = 42.5f * (temperature - 24f);
+            red = 51f * (temperature - 20f);
             green = 255f;
             blue = 0;
         }
-        else if(temperature >= 30f && temperature <= 36f)
+        else if(temperature >= 25f && temperature <= 36f)
         {
             red = 255f;
-            green = -42.5f * (temperature - 36f);
+            green = -23.15f * (temperature - 36f);
             blue = 0;
         }     
         else if(temperature > 36f)
