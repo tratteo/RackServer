@@ -5,6 +5,7 @@
  */
 package rackserver;
 
+import com.fazecast.jSerialComm.SerialPort;
 import rackserver.RunnableUtils.ListenerThreadP2;
 import rackserver.RunnableUtils.ListenerThreadP1;
 import java.awt.*;
@@ -36,6 +37,29 @@ public final class UtilitiesClass
             context.outToAndroidClient.println(message);
             context.outToAndroidClient.flush();
         }
+    }
+    
+    public boolean ConnectAr(Application context)
+    {
+        if(!context.connectedToArduino)
+        {
+            try
+            {
+                context.serialPort =  SerialPort.getCommPort("/dev/ttyACM0");
+                context.serialPort.setComPortParameters(9600, 8, 1, 0);
+                context.serialPort.openPort();
+                context.outToAr = new PrintWriter(context.serialPort.getOutputStream());
+                context.frame.commandLineText.append("Arduino connected\n");
+                context.connectedToArduino=true;
+            }
+            catch (Exception ex)
+            {
+                context.frame.commandLineText.append("Unable to connect to Arduino\n");
+                context.connectedToArduino=false;
+                return false;
+            }
+        }
+        return true;
     }
     
     public boolean ConnectPi(String pi, Application context)

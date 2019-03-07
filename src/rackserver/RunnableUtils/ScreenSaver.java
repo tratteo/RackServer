@@ -16,7 +16,7 @@ import rackserver.UtilitiesClass;
 public class ScreenSaver implements Runnable
 {
     boolean running = false;
-    int timeoutTime = 60;
+    int timeoutTime = 300;
     
     Overlay overlay;
     Application context;

@@ -5,6 +5,7 @@
  */
 package rackserver;
 
+import com.fazecast.jSerialComm.SerialPort;
 import rackserver.RunnableUtils.*;
 import rackserver.UI.RackServerFrame;
 import rackserver.UI.Overlay;
@@ -24,13 +25,13 @@ import java.util.logging.Logger;
 public class Application implements Runnable
 {   
     public RackServerFrame frame;
-    public boolean connectedToP1 = false, connectedToP2 = false, connectedToAndroid = false, firefoxRunning=false;
+    public boolean connectedToP1 = false, connectedToP2 = false, connectedToAndroid = false, connectedToArduino = false, firefoxRunning=false;
     
     ServerSocket serverSocket = null;
     Socket p1Socket = null, p2Socket = null;
     Socket androidSocket;
     
-    PrintWriter outToAndroidClient = null, outToP1 = null, outToP2 = null;
+    PrintWriter outToAndroidClient = null, outToP1 = null, outToP2 = null, outToAr = null;
     private BufferedReader inFromAndroidClient=null;
     private final int portNumber=7777;
 
@@ -38,6 +39,10 @@ public class Application implements Runnable
     public String currentTemperature = null;
     private String sentence; 
     private Application instance;
+    
+    //arduiono
+    SerialPort serialPort;
+
     
     public Application(RackServerFrame frame) {this.frame = frame; instance = this;}
     
@@ -59,7 +64,7 @@ public class Application implements Runnable
         
         do
         {
-            frame.commandLineText.append("Starting Rack-Server v2.0.0\n");            
+            frame.commandLineText.append("Starting Rack-Server v3.0.0\n");            
             try
             {
                 serverSocket = new ServerSocket(portNumber);
@@ -73,6 +78,7 @@ public class Application implements Runnable
             frame.commandLineText.append("Starting thread to connect Raspberrys\n");
             
             new Thread(new ConnectPisRunnable(this)).start();
+            UtilitiesClass.getInstance().ConnectAr(this);
             
             try
             {
@@ -124,6 +130,19 @@ public class Application implements Runnable
                                     frame.commandLineText.append("Sending " + command +" to Pi2\n");
                                     outToP2.print(command);
                                     outToP2.flush();
+                                }
+                            }
+                            else if(sentence.substring(0,2).equals("ar"))
+                            {
+                                if(!connectedToArduino)
+                                {
+                                    UtilitiesClass.getInstance().ConnectAr(this);
+                                    connectedToArduino=!connectedToArduino;
+                                }
+                                else
+                                {
+                                    outToAr.print(sentence.substring(3, sentence.length())+"\n");
+                                    outToAr.flush();
                                 }
                             }
                         }

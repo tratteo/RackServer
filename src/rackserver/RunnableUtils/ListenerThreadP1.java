@@ -50,6 +50,9 @@ public class ListenerThreadP1 implements Runnable
                     context.frame.temperatureLabel.setText(piResponse + "°");
                     int[] rgbValues = UtilitiesClass.getInstance().getRGBValuesFromTemperature(Float.parseFloat(piResponse));
                     context.frame.temperatureLabel.setForeground(new Color(rgbValues[0], rgbValues[1], rgbValues[2]));
+                    
+                    UtilitiesClass.getInstance().WriteToAndroidClient(piResponse, context);
+                    
                 }
             }
             else
