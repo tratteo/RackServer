@@ -42,7 +42,7 @@ public final class UtilitiesClass
     public boolean ConnectAr(Application context)
     {
         if(!context.connectedToArduino)
-        {
+        {   
             try
             {
                 context.serialPort =  SerialPort.getCommPort("/dev/ttyACM0");
@@ -50,12 +50,37 @@ public final class UtilitiesClass
                 context.serialPort.openPort();
                 context.outToAr = new PrintWriter(context.serialPort.getOutputStream());
                 context.frame.commandLineText.append("Arduino connected\n");
+                context.frame.arduinoStatusLabel.setText("Connected");
+                context.frame.arduinoStatusLabel.setForeground(Color.GREEN);
+                context.connectedToArduino=true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                context.frame.commandLineText.append("Unable to connect to Arduino on port ttyACM0... I'm trying on ttyACM1 \n");
+                context.connectedToArduino=false;
+                context.frame.arduinoStatusLabel.setText("Disconnected");
+                context.frame.arduinoStatusLabel.setForeground(Color.RED);
+                //return false;
+            }
+            
+            try
+            {
+                context.serialPort =  SerialPort.getCommPort("/dev/ttyACM1");
+                context.serialPort.setComPortParameters(9600, 8, 1, 0);
+                context.serialPort.openPort();
+                context.outToAr = new PrintWriter(context.serialPort.getOutputStream());
+                context.frame.commandLineText.append("Arduino connected\n");
+                context.frame.arduinoStatusLabel.setText("Connected");
+                context.frame.arduinoStatusLabel.setForeground(Color.GREEN);
                 context.connectedToArduino=true;
             }
             catch (Exception ex)
             {
                 context.frame.commandLineText.append("Unable to connect to Arduino\n");
                 context.connectedToArduino=false;
+                context.frame.arduinoStatusLabel.setText("Disconnected");
+                context.frame.arduinoStatusLabel.setForeground(Color.RED);
                 return false;
             }
         }

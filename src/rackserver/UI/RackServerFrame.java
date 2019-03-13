@@ -50,6 +50,8 @@ public class RackServerFrame extends javax.swing.JFrame
         temperatureLabel = new javax.swing.JLabel();
         exitLabel = new javax.swing.JLabel();
         minimizeLabel = new javax.swing.JLabel();
+        arduinoLabel = new javax.swing.JLabel();
+        arduinoStatusLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rack Server");
@@ -106,6 +108,13 @@ public class RackServerFrame extends javax.swing.JFrame
 
         minimizeLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minimize_18dp.png"))); // NOI18N
 
+        arduinoLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        arduinoLabel.setText("Arduino Status:");
+
+        arduinoStatusLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        arduinoStatusLabel.setForeground(new java.awt.Color(255, 0, 0));
+        arduinoStatusLabel.setText("Disconnected");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -123,7 +132,11 @@ public class RackServerFrame extends javax.swing.JFrame
                         .addComponent(jLabel3))
                     .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(clientsScrollArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(clockLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(arduinoLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(arduinoStatusLabel)))
                 .addContainerGap(115, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -146,9 +159,13 @@ public class RackServerFrame extends javax.swing.JFrame
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
                         .addComponent(guizPiLabel)
-                        .addGap(18, 18, 18)
+                        .addGap(16, 16, 16)
                         .addComponent(tratPiLabel)
-                        .addGap(41, 41, 41)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(arduinoLabel)
+                            .addComponent(arduinoStatusLabel))
+                        .addGap(48, 48, 48)
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
                         .addComponent(clientsScrollArea, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -165,6 +182,8 @@ public class RackServerFrame extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel arduinoLabel;
+    public javax.swing.JLabel arduinoStatusLabel;
     private javax.swing.JScrollPane clientsScrollArea;
     public javax.swing.JLabel clockLabel;
     private javax.swing.JScrollPane commandLineScroll;

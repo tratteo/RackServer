@@ -46,7 +46,7 @@ public class ScreenSaver implements Runnable
                     }
                     else if(time < timeoutTime && running)
                     {
-                        new Thread(new ExecuteRackCommand("pkill firefox", context)).start();
+                        new Thread(new ExecuteRackCommand("wmctrl -c firefox", context)).start();
                         overlay.Destroy();
                         running = false;
                     }

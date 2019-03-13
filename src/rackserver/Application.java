@@ -178,28 +178,41 @@ public class Application implements Runnable
     
     public void CheckCommandToExecuteOnRack(String command)
     {
-        if(command.length()>=7 && command.substring(0,7).equals("firefox"))
+        //run one
+        switch (command)
         {
-            firefoxRunning = true;
-            new Thread(new ExecuteRackCommand(command, this)).start();
-            UtilitiesClass.getInstance().SetFullScreen();
-            overlay= new Overlay(this);       
+            case "spotify":
+               new Thread(new ExecuteRackCommand("/runBatches/run_spotify.sh", this)).start(); 
+               break;
+            case "close firefox":
+               new Thread(new ExecuteRackCommand("wmctrl -c firefox", this)).start(); 
+               firefoxRunning = false;
+               break;
+            case "close spotify":
+               new Thread(new ExecuteRackCommand("wmctrl -c spotify", this)).start(); 
+               break;
+            case "close server":
+                UtilitiesClass.getInstance().CloseService(this);
+                System.exit(0);
+                break;
+                    
+            default:
+                if(command.length()>=7 && command.substring(0,7).equals("firefox"))
+                {
+                    firefoxRunning = true;
+                    new Thread(new ExecuteRackCommand(command, this)).start();
+                    //UtilitiesClass.getInstance().SetFullScreen();
+                    //overlay= new Overlay(this);       
+                }
+                else
+                {
+                    new Thread(new ExecuteRackCommand(command, this)).start();
+                }
+                break;
         }
-        else if(command.equals("close firefox"))
-        {
-            new Thread(new ExecuteRackCommand("pkill firefox", this)).start();
-            firefoxRunning = false;
-            overlay.Destroy();
-        }
-        else if(command.equals("close server"))
-        {
-            UtilitiesClass.getInstance().CloseService(this);
-            System.exit(0);
-        }
-        else
-        {
-            new Thread(new ExecuteRackCommand(command, this)).start();
-        }
+        //frame.commandLineText.append(command + "\n");
+        //frame.commandLineText.append(command.substring(0,12) + "\n");
+        
     }
 }
 
