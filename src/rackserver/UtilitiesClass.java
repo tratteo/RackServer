@@ -6,8 +6,8 @@
 package rackserver;
 
 import com.fazecast.jSerialComm.SerialPort;
-import rackserver.RunnableUtils.ListenerThreadP2;
-import rackserver.RunnableUtils.ListenerThreadP1;
+import rackserver.Runnables.ListenerP2Runnable;
+import rackserver.Runnables.ListenerP1Runnable;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
@@ -30,109 +30,97 @@ public final class UtilitiesClass
     }
     
     
-    public void WriteToAndroidClient(String message, Application context)
+    public synchronized boolean ConnectArduino(Server context)
     {
-        if(context.outToAndroidClient != null)
+        try
         {
-            context.outToAndroidClient.println(message);
-            context.outToAndroidClient.flush();
+            context.serialPort =  SerialPort.getCommPort("/dev/ttyACM0");
+            context.serialPort.setComPortParameters(9600, 8, 1, 0);
+            context.serialPort.openPort();
+            context.getDevicesManager().outToArduino = new PrintWriter(context.serialPort.getOutputStream());
+            context.frame.commandLineText.append("Arduino connected\n");
+            context.frame.arduinoStatusLabel.setText("Connected");
+            context.frame.arduinoStatusLabel.setForeground(Color.GREEN);
+            context.getDevicesManager().setConnectedToArduino(true);
+            return true;
         }
-    }
-    
-    public boolean ConnectAr(Application context)
-    {
-        if(!context.connectedToArduino)
-        {   
-            try
-            {
-                context.serialPort =  SerialPort.getCommPort("/dev/ttyACM0");
-                context.serialPort.setComPortParameters(9600, 8, 1, 0);
-                context.serialPort.openPort();
-                context.outToAr = new PrintWriter(context.serialPort.getOutputStream());
-                context.frame.commandLineText.append("Arduino connected\n");
-                context.frame.arduinoStatusLabel.setText("Connected");
-                context.frame.arduinoStatusLabel.setForeground(Color.GREEN);
-                context.connectedToArduino=true;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                context.frame.commandLineText.append("Unable to connect to Arduino on port ttyACM0... I'm trying on ttyACM1 \n");
-                context.connectedToArduino=false;
-                context.frame.arduinoStatusLabel.setText("Disconnected");
-                context.frame.arduinoStatusLabel.setForeground(Color.RED);
-                //return false;
-            }
-            
-            try
-            {
-                context.serialPort =  SerialPort.getCommPort("/dev/ttyACM1");
-                context.serialPort.setComPortParameters(9600, 8, 1, 0);
-                context.serialPort.openPort();
-                context.outToAr = new PrintWriter(context.serialPort.getOutputStream());
-                context.frame.commandLineText.append("Arduino connected\n");
-                context.frame.arduinoStatusLabel.setText("Connected");
-                context.frame.arduinoStatusLabel.setForeground(Color.GREEN);
-                context.connectedToArduino=true;
-            }
-            catch (Exception ex)
-            {
-                context.frame.commandLineText.append("Unable to connect to Arduino\n");
-                context.connectedToArduino=false;
-                context.frame.arduinoStatusLabel.setText("Disconnected");
-                context.frame.arduinoStatusLabel.setForeground(Color.RED);
-                return false;
-            }
+        catch (Exception ex)
+        {
+            context.frame.commandLineText.append("Unable to connect to Arduino on port ttyACM0... I'm trying on ttyACM1 \n");
+            context.getDevicesManager().setConnectedToArduino(false);
+            context.frame.arduinoStatusLabel.setText("Disconnected");
+            context.frame.arduinoStatusLabel.setForeground(Color.RED);
+            //return false;
+        }
+
+        try
+        {
+            context.serialPort =  SerialPort.getCommPort("/dev/ttyACM1");
+            context.serialPort.setComPortParameters(9600, 8, 1, 0);
+            context.serialPort.openPort();
+            context.getDevicesManager().outToArduino = new PrintWriter(context.serialPort.getOutputStream());
+            context.frame.commandLineText.append("Arduino connected\n");
+            context.frame.arduinoStatusLabel.setText("Connected");
+            context.frame.arduinoStatusLabel.setForeground(Color.GREEN);
+            context.getDevicesManager().setConnectedToArduino(true);
+        }
+        catch (Exception ex)
+        {
+            context.frame.commandLineText.append("Unable to connect to Arduino\n");
+            context.getDevicesManager().setConnectedToArduino(false);
+            context.frame.arduinoStatusLabel.setText("Disconnected");
+            context.frame.arduinoStatusLabel.setForeground(Color.RED);
+            return false;
         }
         return true;
     }
     
-    public boolean ConnectPi(String pi, Application context)
+    public synchronized boolean ConnectPi(String pi, Server context)
     {
-        if(pi.equals("p1") && !context.connectedToP1)
+        if(pi.equals("p1") && !context.getDevicesManager().isConnectedToArduino())
         {
             try 
             { 
                 context.p1Socket = new Socket();
                 context.p1Socket.connect(new InetSocketAddress("192.168.1.100", 5555), 1000);
-                context.outToP1 = new PrintWriter(context.p1Socket.getOutputStream());
-                Thread p1Listener = new Thread(new ListenerThreadP1(context.p1Socket, context));
+                context.getDevicesManager().outToP1 = new PrintWriter(context.p1Socket.getOutputStream());
+                Thread p1Listener = new Thread(new ListenerP1Runnable(context.p1Socket, context));
                 context.frame.tratPiLabel.setForeground(new Color(80, 255, 70));
                 context.frame.commandLineText.append("Pi 1 connected\n");
-                context.connectedToP1 = true;
-                WriteToAndroidClient("p1-connected", context);
+                context.getDevicesManager().setConnectedToP1(true);
+                context.WriteToAllClients("p1-connected");
                 p1Listener.start();
                 return true;
 
             } 
             catch (Exception e) 
             {
-                WriteToAndroidClient("p1-unable", context);
+                context.WriteToAllClients("p1-unable");
                 context.frame.tratPiLabel.setForeground(Color.RED);
-                context.connectedToP1 = false;
+                context.getDevicesManager().setConnectedToP1(false);
                 return false;
             }
         }
 
-        else if(pi.equals("p2") && !context.connectedToP2)
+        else if(pi.equals("p2") && !context.getDevicesManager().isConnectedToP2())
         {
             try 
             {
                 context.p2Socket = new Socket();
                 context.p2Socket.connect(new InetSocketAddress("192.168.1.187", 6666), 1000);
-                context.outToP2 = new PrintWriter(context.p2Socket.getOutputStream());
-                Thread p2Listener = new Thread(new ListenerThreadP2(context.p2Socket, context));
+                context.getDevicesManager().outToP2 = new PrintWriter(context.p2Socket.getOutputStream());
+                Thread p2Listener = new Thread(new ListenerP2Runnable(context.p2Socket, context));
                 p2Listener.start();
                 context.frame.guizPiLabel.setForeground(new Color(80, 255, 70));
                 context.frame.commandLineText.append("Pi 2 connected\n");
-                context.connectedToP2 = true;
-                WriteToAndroidClient("p2-connected", context);
+                context.getDevicesManager().setConnectedToP2(true);
+                context.WriteToAllClients("p2-connected");
                 return true;
 
             } catch (Exception e)
             {
-                context.connectedToP2 = false;
-                WriteToAndroidClient("p2-unable", context);
+                context.getDevicesManager().setConnectedToP2(false);
+                context.WriteToAllClients("p2-unable");
                 context.frame.guizPiLabel.setForeground(Color.RED);
                 return false;
             }
@@ -140,7 +128,7 @@ public final class UtilitiesClass
         return false;
     }
     
-    public void DisconnectPi(String pi, Application context)
+    public void DisconnectPi(String pi, Server context)
     {
         if(pi.equals("p1"))
         {
@@ -148,7 +136,7 @@ public final class UtilitiesClass
             {
                 context.p1Socket.close();
                 context.frame.tratPiLabel.setForeground(Color.RED);
-                context.connectedToP1 = false;
+                context.getDevicesManager().setConnectedToP1(false);
                 context.p1Socket = null;
             } catch (Exception e) {}
         }
@@ -159,19 +147,18 @@ public final class UtilitiesClass
             {
                 context.p2Socket.close();
                 context.frame.guizPiLabel.setForeground(Color.RED);
-                context.connectedToP2 = false;
+                context.getDevicesManager().setConnectedToP2(false);
                 context.p2Socket = null;
             } catch (Exception e) {}
         }
     }
     
-    public void CloseService(Application context)
-    {   
+    public void CloseService(Server context)
+    {
         try
         {
             context.frame.commandLineText.append("Sending close message to client...\n");
-            context.outToAndroidClient.println("serverdown");
-            context.outToAndroidClient.flush();
+            context.WriteToAllClients("serverdown");
         }
         catch (Exception e) 
         {
@@ -181,8 +168,7 @@ public final class UtilitiesClass
         try
         {
             context.frame.commandLineText.append("Sending close message to Pi1...");
-            context.outToP1.print("disconnecting");
-            context.outToP1.flush();
+            context.getDevicesManager().WriteToP1("disconnecting");
             context.p1Socket.close();
             context.frame.commandLineText.append("\n");
 
@@ -193,8 +179,7 @@ public final class UtilitiesClass
         try
         {
             context.frame.commandLineText.append("Sending close message to Pi2...");
-            context.outToP2.print("disconnecting");
-            context.outToP2.flush();
+            context.getDevicesManager().WriteToP2("disconnecting");
             context.p2Socket.close();
             context.frame.commandLineText.append("\n");
         } 
@@ -216,12 +201,12 @@ public final class UtilitiesClass
         return (command.substring(0,3).equals("p2-") && command.length() > 3);
     }
     
-    public void SetFullScreen()
+    public void SetFullScreen(int delay)
     {
         try 
             {                                                    
                 Robot robot = new Robot();
-                robot.delay(10000);
+                robot.delay(delay);
                 robot.keyPress(KeyEvent.VK_F11);
                 robot.keyRelease(KeyEvent.VK_F11);
             } catch (Exception ex) { }

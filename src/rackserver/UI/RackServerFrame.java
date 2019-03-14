@@ -8,7 +8,7 @@ package rackserver.UI;
 
 import java.awt.*;
 import javax.swing.text.DefaultCaret;
-import rackserver.FrameMouseListener;
+import rackserver.FrameListener;
 
 /*
  *
@@ -27,7 +27,7 @@ public class RackServerFrame extends javax.swing.JFrame
         guizPiLabel.setForeground(Color.RED);  
     }
     
-    public void setMouseListener(FrameMouseListener listener) 
+    public void setMouseListener(FrameListener listener) 
     {
         exitLabel.addMouseListener(listener);
         minimizeLabel.addMouseListener(listener);
@@ -46,7 +46,7 @@ public class RackServerFrame extends javax.swing.JFrame
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         clientsScrollArea = new javax.swing.JScrollPane();
-        conectedClientText = new javax.swing.JTextArea();
+        connectedClientText = new javax.swing.JTextArea();
         temperatureLabel = new javax.swing.JLabel();
         exitLabel = new javax.swing.JLabel();
         minimizeLabel = new javax.swing.JLabel();
@@ -93,13 +93,13 @@ public class RackServerFrame extends javax.swing.JFrame
         clientsScrollArea.setBackground(new java.awt.Color(102, 255, 255));
         clientsScrollArea.setAutoscrolls(true);
 
-        conectedClientText.setEditable(false);
-        conectedClientText.setBackground(new java.awt.Color(204, 255, 204));
-        conectedClientText.setColumns(20);
-        conectedClientText.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        conectedClientText.setRows(5);
-        conectedClientText.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        clientsScrollArea.setViewportView(conectedClientText);
+        connectedClientText.setEditable(false);
+        connectedClientText.setBackground(new java.awt.Color(204, 255, 204));
+        connectedClientText.setColumns(20);
+        connectedClientText.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        connectedClientText.setRows(5);
+        connectedClientText.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        clientsScrollArea.setViewportView(connectedClientText);
 
         temperatureLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
         temperatureLabel.setText("0°");
@@ -188,7 +188,7 @@ public class RackServerFrame extends javax.swing.JFrame
     public javax.swing.JLabel clockLabel;
     private javax.swing.JScrollPane commandLineScroll;
     public javax.swing.JTextArea commandLineText;
-    public javax.swing.JTextArea conectedClientText;
+    public javax.swing.JTextArea connectedClientText;
     public javax.swing.JLabel exitLabel;
     public javax.swing.JLabel guizPiLabel;
     private javax.swing.JLabel jLabel1;

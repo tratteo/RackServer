@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver.RunnableUtils;
+package rackserver.Runnables;
 
-import rackserver.Application;
+import rackserver.Server;
 import rackserver.UI.Overlay;
 import rackserver.UtilitiesClass;
 
@@ -13,15 +13,15 @@ import rackserver.UtilitiesClass;
  *
  * @author Matteo
  */
-public class ScreenSaver implements Runnable
+public class ScreenSaverRunnable implements Runnable
 {
     boolean running = false;
-    int timeoutTime = 300;
+    int timeoutTime = 1800;
     
     Overlay overlay;
-    Application context;
+    Server context;
     
-    public ScreenSaver(Application context) {this.context = context;}
+    public ScreenSaverRunnable(Server context) {this.context = context;}
     
     @Override
     public void run()
@@ -31,22 +31,22 @@ public class ScreenSaver implements Runnable
             try {Thread.sleep(500);} catch (Exception ex) {}
             try
             {
-                if(!context.firefoxRunning)
+                if(!context.isFirefoxRunning())
                 {
                     int time = 0;
-                    for(time = 0; time < timeoutTime && !context.connectedToAndroid ; time++)
+                    for(time = 0; time < timeoutTime && context.getNumberOfConnectedClients() == 0 ; time++)
                         try {Thread.sleep(1000);} catch (Exception ex) {System.out.println(ex);}
 
                     if (time == timeoutTime && !running)
                     {
-                        new Thread(new ExecuteRackCommand("firefox https://www.youtube.com/tv#/watch/video/control?v=sH05pHZuptA", context)).start();
-                        UtilitiesClass.getInstance().SetFullScreen();
+                        new Thread(new ExecuteRackCommandRunnable("firefox https://www.youtube.com/tv#/watch/video/control?v=sH05pHZuptA", context)).start();
+                        UtilitiesClass.getInstance().SetFullScreen(10000);
                         running = true;
                         overlay = new Overlay(context);
                     }
                     else if(time < timeoutTime && running)
                     {
-                        new Thread(new ExecuteRackCommand("wmctrl -c firefox", context)).start();
+                        new Thread(new ExecuteRackCommandRunnable("wmctrl -c firefox", context)).start();
                         overlay.Destroy();
                         running = false;
                     }

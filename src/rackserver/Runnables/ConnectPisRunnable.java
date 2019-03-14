@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver.RunnableUtils;
+package rackserver.Runnables;
 
 import rackserver.*;
 
@@ -14,9 +14,9 @@ import rackserver.*;
 public class ConnectPisRunnable implements Runnable
 {
     private boolean p1Connected = false, p2Connected = false;
-    private Application context;
+    private Server context;
     
-    public ConnectPisRunnable(Application context) {this.context = context;}
+    public ConnectPisRunnable(Server context) {this.context = context;}
     
     @Override 
     public void run()

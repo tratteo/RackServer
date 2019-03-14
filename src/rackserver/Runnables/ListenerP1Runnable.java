@@ -3,28 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver.RunnableUtils;
+package rackserver.Runnables;
 
 import java.awt.Color;
 import rackserver.UI.Overlay;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import rackserver.Application;
+import rackserver.Server;
 import rackserver.UtilitiesClass;
 
 /**
  *
  * @author Matteo
  */
-public class ListenerThreadP1 implements Runnable
+public class ListenerP1Runnable implements Runnable
 {
 
-    Application context;
+    Server context;
     BufferedReader inFromPi = null;
     String piResponse;
 	
-    public ListenerThreadP1(Socket _socket, Application context)
+    public ListenerP1Runnable(Socket _socket, Server context)
     {
         this.context = context;
         try{ inFromPi = new BufferedReader(new InputStreamReader(_socket.getInputStream())); } catch (Exception e) {}
@@ -33,7 +33,7 @@ public class ListenerThreadP1 implements Runnable
     @Override
     public void run()
     { 
-        while(context.connectedToP1)
+        while(context.getDevicesManager().isConnectedToP1())
         {
             try {piResponse = inFromPi.readLine();} catch(Exception e) {System.out.println(e);}
             if(piResponse != null)
@@ -42,7 +42,7 @@ public class ListenerThreadP1 implements Runnable
                 {
                     UtilitiesClass.getInstance().DisconnectPi("p1", context);
                     context.frame.commandLineText.append("P1 has interrupted connection\n");
-                    UtilitiesClass.getInstance().WriteToAndroidClient("p1-interrupt", context);
+                    context.WriteToAllClients("p1-interrupt");
                 }
                 else if(UtilitiesClass.getInstance().isStringFloat(piResponse))
                 {
@@ -51,7 +51,7 @@ public class ListenerThreadP1 implements Runnable
                     int[] rgbValues = UtilitiesClass.getInstance().getRGBValuesFromTemperature(Float.parseFloat(piResponse));
                     context.frame.temperatureLabel.setForeground(new Color(rgbValues[0], rgbValues[1], rgbValues[2]));
                     
-                    UtilitiesClass.getInstance().WriteToAndroidClient(piResponse, context);
+                    context.WriteToAllClients(piResponse);
                     
                 }
             }

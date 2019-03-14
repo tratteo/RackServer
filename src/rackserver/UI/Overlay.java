@@ -6,8 +6,8 @@
 package rackserver.UI;
 import java.awt.Color;
 import javax.swing.*;
-import rackserver.Application;
-import rackserver.RunnableUtils.DigitalClock;
+import rackserver.Server;
+import rackserver.Runnables.DigitalClockRunnable;
 import rackserver.UtilitiesClass;
 /**
  *
@@ -16,8 +16,8 @@ import rackserver.UtilitiesClass;
 public class Overlay extends javax.swing.JFrame 
 {
     private boolean overlayVisible;
-    private final Application context;
-    public Overlay(Application context) 
+    private final Server context;
+    public Overlay(Server context) 
     {
         this.context = context;
         initComponents();
@@ -33,7 +33,7 @@ public class Overlay extends javax.swing.JFrame
         this.setVisible(true);
         this.pack();     
         overlayVisible = true;
-        new Thread(new DigitalClock(clockLabel)).start();
+        new Thread(new DigitalClockRunnable(clockLabel)).start();
         new Thread(new TemperatureThread()).start();
     }
     

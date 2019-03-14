@@ -26,8 +26,8 @@ public class Main
         frame.setUndecorated(true);
         frame.setVisible(true); 
         
-        Application application = new Application(frame);
-        FrameMouseListener listener = new FrameMouseListener(frame, application);
+        Server application = new Server(frame);
+        FrameListener listener = new FrameListener(frame, application);
         frame.setMouseListener(listener);
         
         new Thread(application).start();

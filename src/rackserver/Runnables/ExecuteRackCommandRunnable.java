@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver.RunnableUtils;
+package rackserver.Runnables;
 
 import rackserver.UI.RackServerFrame;
 import java.io.BufferedReader;
@@ -11,20 +11,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rackserver.Application;
+import rackserver.Server;
 
 /**
  *
  * @author Matteo
  */
-public class ExecuteRackCommand implements Runnable
+public class ExecuteRackCommandRunnable implements Runnable
 {
-    Application context;
+    Server context;
     String command;
     Runtime run;
     Process pr;
         
-    public ExecuteRackCommand(String command, Application context)
+    public ExecuteRackCommandRunnable(String command, Server context)
     {
         this.context = context;
         this.command = command;

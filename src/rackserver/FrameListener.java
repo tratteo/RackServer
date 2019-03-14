@@ -13,12 +13,12 @@ import rackserver.UI.RackServerFrame;
  *
  * @author Matteo
  */
-public class FrameMouseListener extends MouseAdapter
+public class FrameListener extends MouseAdapter
 {
     RackServerFrame serverFrame;
-    Application context;
+    Server context;
     
-    public FrameMouseListener(RackServerFrame serverFrame, Application context) {this.serverFrame = serverFrame; this.context = context;}
+    public FrameListener(RackServerFrame serverFrame, Server context) {this.serverFrame = serverFrame; this.context = context;}
     
     @Override
     public void mouseClicked(MouseEvent me)

@@ -3,20 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver.RunnableUtils;
+package rackserver.Runnables;
 
 import java.io.*;
 import java.net.*;
-import rackserver.Application;
+import rackserver.Server;
 import rackserver.UtilitiesClass;
 
-public class ListenerThreadP2 implements Runnable
+public class ListenerP2Runnable implements Runnable
 {
-    Application context;
+    Server context;
     BufferedReader inFromPi = null;
     String piResponse;
 	
-    public ListenerThreadP2(Socket _socket, Application context)
+    public ListenerP2Runnable(Socket _socket, Server context)
     {
         this.context = context;
         try{ inFromPi = new BufferedReader(new InputStreamReader(_socket.getInputStream())); } catch (Exception e) {System.out.println(e);}
@@ -25,7 +25,7 @@ public class ListenerThreadP2 implements Runnable
     @Override
     public void run()
     { 
-         while(context.connectedToP2)
+         while(context.getDevicesManager().isConnectedToP2())
         {
             try {piResponse = inFromPi.readLine();} catch(Exception e) {System.out.println(e);}
             if(piResponse != null)
@@ -34,13 +34,8 @@ public class ListenerThreadP2 implements Runnable
                 {
                     UtilitiesClass.getInstance().DisconnectPi("p2", context);
                     context.frame.commandLineText.append("P2 has interrupted connection\n");
-                    UtilitiesClass.getInstance().WriteToAndroidClient("p2-interrupt", context);
-
-                }
-                else if(piResponse.equals("rainbowrunning"))
-                {
-                    UtilitiesClass.getInstance().WriteToAndroidClient("rainbowrunning", context);
-                }                     
+                    context.WriteToAllClients("p2-interrupt");
+                }                
             }                    
             else
                 context.frame.commandLineText.append("Null response\n");

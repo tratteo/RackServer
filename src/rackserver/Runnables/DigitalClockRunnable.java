@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rackserver.RunnableUtils;
+package rackserver.Runnables;
 
 import java.time.LocalTime;
 import javax.swing.JLabel;
@@ -12,7 +12,7 @@ import javax.swing.JLabel;
  * @author aguiz
  * Create digital clock behaviour and print it on a label
 */
-public class DigitalClock implements Runnable
+public class DigitalClockRunnable implements Runnable
 {
     int hour;
     int minute;
@@ -25,7 +25,7 @@ public class DigitalClock implements Runnable
     JLabel clock;
     
     
-    public DigitalClock(JLabel clock)
+    public DigitalClockRunnable(JLabel clock)
     {
         this.clock = clock;
         time = LocalTime.now();
