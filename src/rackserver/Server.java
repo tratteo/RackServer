@@ -147,7 +147,7 @@ public class Server implements Runnable
                firefoxRunning = false;
                break;
             case "close spotify":
-               new Thread(new ExecuteRackCommandRunnable("wmctrl -c spotify", this)).start(); 
+               new Thread(new ExecuteRackCommandRunnable("pkill spotify", this)).start(); 
                break;
             case "close server":
                 UtilitiesClass.getInstance().CloseService(this);
