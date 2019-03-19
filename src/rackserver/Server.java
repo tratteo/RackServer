@@ -87,9 +87,9 @@ public class Server implements Runnable
             }
             
             devicesManager = new DevicesManager(this);
-            
-            devicesManager.StartPiConnectionThread();
+           
             devicesManager.ConnectArduino();
+            devicesManager.StartPiConnectionThread();
             
             try
             {

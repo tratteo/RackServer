@@ -128,7 +128,6 @@ public class ClientRunnable implements Runnable
     {
         try
         {
-            
             outToClient.println(message);
             outToClient.flush();
         }catch(Exception e) {}

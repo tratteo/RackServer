@@ -77,12 +77,12 @@ public final class UtilitiesClass
     
     public synchronized boolean ConnectPi(String pi, Server context)
     {
-        if(pi.equals("p1") && !context.getDevicesManager().isConnectedToArduino())
+        if(pi.equals("p1") && !context.getDevicesManager().isConnectedToP1())
         {
             try 
             { 
                 context.p1Socket = new Socket();
-                context.p1Socket.connect(new InetSocketAddress("192.168.1.100", 5555), 1000);
+                context.p1Socket.connect(new InetSocketAddress("192.168.1.100", 5555), 1500);
                 context.getDevicesManager().outToP1 = new PrintWriter(context.p1Socket.getOutputStream());
                 Thread p1Listener = new Thread(new ListenerP1Runnable(context.p1Socket, context));
                 context.frame.tratPiLabel.setForeground(new Color(80, 255, 70));
@@ -107,7 +107,7 @@ public final class UtilitiesClass
             try 
             {
                 context.p2Socket = new Socket();
-                context.p2Socket.connect(new InetSocketAddress("192.168.1.187", 6666), 1000);
+                context.p2Socket.connect(new InetSocketAddress("192.168.1.187", 6666), 1500);
                 context.getDevicesManager().outToP2 = new PrintWriter(context.p2Socket.getOutputStream());
                 Thread p2Listener = new Thread(new ListenerP2Runnable(context.p2Socket, context));
                 p2Listener.start();

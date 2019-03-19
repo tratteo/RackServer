@@ -21,12 +21,11 @@ public class ConnectPisRunnable implements Runnable
     @Override 
     public void run()
     {
-        while(!p1Connected && !p2Connected)
+        while(!p1Connected || !p2Connected)
         {
-            //System.err.println("Connecting");
             p1Connected = UtilitiesClass.getInstance().ConnectPi("p1", context);
             p2Connected = UtilitiesClass.getInstance().ConnectPi("p2", context);
-            try{Thread.sleep(60000);}catch(InterruptedException ignored){}
+            try{Thread.sleep(30000);}catch(InterruptedException ignored){}
         }
     }
     
