@@ -35,7 +35,7 @@ public class ExecuteRackCommandRunnable implements Runnable
     {
         try 
         {
-            context.frame.commandLineText.append("Executing command on rack:" + command + "\n");
+            //context.frame.commandLineText.append("Executing command on rack:" + command + "\n");
             run = Runtime.getRuntime();
             Process pr = run.exec(command);
             pr.waitFor();

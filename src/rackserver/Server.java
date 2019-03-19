@@ -70,7 +70,7 @@ public class Server implements Runnable
             }
         });
         
-        new Thread(new ScreenSaverRunnable(this)).start();
+        //new Thread(new ScreenSaverRunnable(this)).start();
         new Thread(new DigitalClockRunnable(frame.clockLabel)).start();
         
         do
@@ -136,12 +136,22 @@ public class Server implements Runnable
     
     public void CheckCommandToExecuteOnRack(String command)
     {
+        String spotifyPrefix = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
         //run one
         switch (command)
         {
             case "spotify":
                new Thread(new ExecuteRackCommandRunnable("/runBatches/run_spotify.sh", this)).start(); 
                break;
+            case "spotifytoggle":
+                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "PlayPause", this)).start();
+                break;
+            case "spotifynext":
+                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Next", this)).start();
+                break;
+            case "spotifyprevious":
+                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Previous", this)).start();
+                break;
             case "close firefox":
                new Thread(new ExecuteRackCommandRunnable("wmctrl -c firefox", this)).start(); 
                firefoxRunning = false;
