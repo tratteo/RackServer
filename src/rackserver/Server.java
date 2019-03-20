@@ -141,23 +141,23 @@ public class Server implements Runnable
         switch (command)
         {
             case "spotify":
-               new Thread(new ExecuteRackCommandRunnable("/runBatches/run_spotify.sh", this)).start(); 
+               new Thread(new ExecuteRackCommandRunnable("/runBatches/run_spotify.sh", this, false)).start(); 
                break;
             case "spotifytoggle":
-                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "PlayPause", this)).start();
+                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "PlayPause", this, false)).start();
                 break;
             case "spotifynext":
-                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Next", this)).start();
+                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Next", this, false)).start();
                 break;
             case "spotifyprevious":
-                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Previous", this)).start();
+                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Previous", this, false)).start();
                 break;
             case "close firefox":
-               new Thread(new ExecuteRackCommandRunnable("wmctrl -c firefox", this)).start(); 
+               new Thread(new ExecuteRackCommandRunnable("wmctrl -c firefox", this, false)).start(); 
                firefoxRunning = false;
                break;
             case "close spotify":
-               new Thread(new ExecuteRackCommandRunnable("pkill spotify", this)).start(); 
+               new Thread(new ExecuteRackCommandRunnable("pkill spotify", this, false)).start(); 
                break;
             case "close server":
                 UtilitiesClass.getInstance().CloseService(this);
@@ -168,13 +168,13 @@ public class Server implements Runnable
                 if(command.length()>=7 && command.substring(0,7).equals("firefox"))
                 {
                     firefoxRunning = true;
-                    new Thread(new ExecuteRackCommandRunnable(command, this)).start();
+                    new Thread(new ExecuteRackCommandRunnable(command, this, false)).start();
                     //UtilitiesClass.getInstance().SetFullScreen();
                     //overlay= new Overlay(this);       
                 }
                 else
                 {
-                    new Thread(new ExecuteRackCommandRunnable(command, this)).start();
+                    new Thread(new ExecuteRackCommandRunnable(command, this, true)).start();
                 }
                 break;
         }

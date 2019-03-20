@@ -23,11 +23,13 @@ public class ExecuteRackCommandRunnable implements Runnable
     String command;
     Runtime run;
     Process pr;
+    boolean printResult = false;
         
-    public ExecuteRackCommandRunnable(String command, Server context)
+    public ExecuteRackCommandRunnable(String command, Server context, boolean printResult)
     {
         this.context = context;
         this.command = command;
+        this.printResult = printResult;
     }
     
     @Override
@@ -39,11 +41,14 @@ public class ExecuteRackCommandRunnable implements Runnable
             run = Runtime.getRuntime();
             Process pr = run.exec(command);
             pr.waitFor();
-            BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String line = "";
-            while ((line=buf.readLine())!=null)
+            if(printResult)
             {
-                context.frame.commandLineText.append(line + "\n");
+                BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                String line = "";
+                while ((line=buf.readLine())!=null)
+                {
+                    context.frame.commandLineText.append(line + "\n");
+                }
             }
         } catch (InterruptedException ex) {} 
         catch (IOException ex) {Logger.getLogger(RackServerFrame.class.getName()).log(Level.SEVERE, null, ex);}

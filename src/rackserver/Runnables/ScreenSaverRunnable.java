@@ -39,14 +39,14 @@ public class ScreenSaverRunnable implements Runnable
 
                     if (time == timeoutTime && !running)
                     {
-                        new Thread(new ExecuteRackCommandRunnable("firefox https://www.youtube.com/tv#/watch/video/control?v=sH05pHZuptA", context)).start();
+                        new Thread(new ExecuteRackCommandRunnable("firefox https://www.youtube.com/tv#/watch/video/control?v=sH05pHZuptA", context, false)).start();
                         UtilitiesClass.getInstance().SetFullScreen(10000);
                         running = true;
                         overlay = new Overlay(context);
                     }
                     else if(time < timeoutTime && running)
                     {
-                        new Thread(new ExecuteRackCommandRunnable("wmctrl -c firefox", context)).start();
+                        new Thread(new ExecuteRackCommandRunnable("wmctrl -c firefox", context, false)).start();
                         overlay.Destroy();
                         running = false;
                     }
