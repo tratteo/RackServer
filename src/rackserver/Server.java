@@ -98,12 +98,18 @@ public class Server implements Runnable
                 {
                     //commandLineText.append("Waiting for clients connection...\n");
                     androidSocket = serverSocket.accept();
-                    
                     String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
-                    frame.connectedClientText.append(ipString + "\n");                    
-                    ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
-                    new Thread(clientRunnable).start();                    
-                    clientsList.put(ipString, clientRunnable);
+                    if(clientsList.containsKey(ipString))
+                    {
+                        androidSocket.close();
+                    }
+                    else
+                    {
+                        frame.connectedClientText.append(ipString + "\n");                    
+                        ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
+                        new Thread(clientRunnable).start();                    
+                        clientsList.put(ipString, clientRunnable);
+                    }
                    
                 }while(true);
             }

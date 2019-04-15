@@ -128,7 +128,8 @@ public class ClientRunnable implements Runnable
         {
             outToClient.println(message);
             outToClient.flush();
-        }catch(Exception e) {}
+        }
+        catch(Exception e) {}
     }
     
 }
