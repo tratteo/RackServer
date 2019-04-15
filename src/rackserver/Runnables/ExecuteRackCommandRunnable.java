@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rackserver.Server;
+import rackserver.UtilitiesClass;
 
 /**
  *
@@ -19,38 +20,88 @@ import rackserver.Server;
  */
 public class ExecuteRackCommandRunnable implements Runnable
 {
-    Server context;
-    String command;
+    Server server;
+    String message;
     Runtime run;
     Process pr;
-    boolean printResult = false;
-        
-    public ExecuteRackCommandRunnable(String command, Server context, boolean printResult)
+    BufferedReader buf;
+    String line = "";
+                
+    public ExecuteRackCommandRunnable(String message, Server server)
     {
-        this.context = context;
-        this.command = command;
-        this.printResult = printResult;
+        this.server = server;
+        this.message = message;
     }
     
     @Override
     public void run()
     {
-        try 
+        try
         {
-            //context.frame.commandLineText.append("Executing command on rack:" + command + "\n");
             run = Runtime.getRuntime();
-            Process pr = run.exec(command);
-            pr.waitFor();
-            if(printResult)
+            String spotifyPrefix = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
+            
+            switch (message)
             {
-                BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-                String line = "";
-                while ((line=buf.readLine())!=null)
-                {
-                    context.frame.commandLineText.append(line + "\n");
-                }
-            }
-        } catch (InterruptedException ex) {} 
-        catch (IOException ex) {Logger.getLogger(RackServerFrame.class.getName()).log(Level.SEVERE, null, ex);}
+                case "spotify":
+                    executeProcess("/run_batches/run_spotify.sh");
+                    break;
+                    
+                case "spotifytoggle":
+                    executeProcess(spotifyPrefix + "PlayPause");
+                    break;
+                    
+                case "spotifynext":
+                    executeProcess(spotifyPrefix + "Next");
+                    break;
+                    
+                case "spotifyprevious":
+                    executeProcess(spotifyPrefix + "Previous");
+                    break;
+                    
+                case "close firefox":
+                    executeProcess("wmctrl -c firefox");
+                    server.setFirefoxRunning(false);
+                    break;
+                    
+                case "close spotify":
+                    executeProcess("pkill spotify");
+                    break;
+                    
+                case "close server":
+                    UtilitiesClass.getInstance().CloseService(server);
+                    System.exit(0);
+                    break;
+
+                default:
+                    if(message.length() >= 6 && message.substring(0,6).equals("volume"))
+                    {
+                        int volume = Integer.parseInt(message.substring(6));
+                        executeProcess("amixer -D pulse sset Master " + volume + "%");
+                    }
+                    else if(message.length()>=7 && message.substring(0,7).equals("firefox"))
+                    {
+                        server.setFirefoxRunning(true);  
+                        executeProcess(message);
+                    }
+                    else
+                    {
+                        executeProcess(message);
+                        buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                        while((line = buf.readLine()) != null)
+                        {
+                            server.frame.commandLineText.append(line + "\n");
+                        }
+                    }       
+                    break;
+            } 
+        }
+        catch(Exception e){server.frame.commandLineText.append("Rack runnable catch: " + e.toString());}
+    }
+    
+    public void executeProcess(String command) throws Exception
+    {
+        pr = run.exec(command);
+        pr.waitFor();
     }
 }

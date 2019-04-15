@@ -32,6 +32,7 @@ public class Server implements Runnable
     public RackServerFrame frame;
     private boolean firefoxRunning = false;
     public synchronized boolean isFirefoxRunning() {return firefoxRunning;}
+    public synchronized void setFirefoxRunning(boolean state) {firefoxRunning = state;}
     
     //Connection variables
     private ServerSocket serverSocket = null;
@@ -97,24 +98,13 @@ public class Server implements Runnable
                 {
                     //commandLineText.append("Waiting for clients connection...\n");
                     androidSocket = serverSocket.accept();
-                    //TODO remove
-                    //connectedToAndroid = true;
                     
                     String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
-                    frame.connectedClientText.append(ipString + "\n");
-                    
+                    frame.connectedClientText.append(ipString + "\n");                    
                     ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
-                    new Thread(clientRunnable).start();
-                    
+                    new Thread(clientRunnable).start();                    
                     clientsList.put(ipString, clientRunnable);
-                    
-                    //outToAndroidClient = new PrintWriter(androidSocket.getOutputStream());
-                    //inFromAndroidClient =  new BufferedReader(new InputStreamReader(androidSocket.getInputStream()));	
-
-                    
-                    //TODO implement in client runnable
-                    
-
+                   
                 }while(true);
             }
             catch (Exception e) 
@@ -132,55 +122,6 @@ public class Server implements Runnable
                 frame.connectedClientText.setText("");
             }   
         }while(true);
-    }
-    
-    public void CheckCommandToExecuteOnRack(String command)
-    {
-        String spotifyPrefix = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
-        //run one
-        switch (command)
-        {
-            case "spotify":
-               new Thread(new ExecuteRackCommandRunnable("/runBatches/run_spotify.sh", this, false)).start(); 
-               break;
-            case "spotifytoggle":
-                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "PlayPause", this, false)).start();
-                break;
-            case "spotifynext":
-                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Next", this, false)).start();
-                break;
-            case "spotifyprevious":
-                new Thread(new ExecuteRackCommandRunnable(spotifyPrefix + "Previous", this, false)).start();
-                break;
-            case "close firefox":
-               new Thread(new ExecuteRackCommandRunnable("wmctrl -c firefox", this, false)).start(); 
-               firefoxRunning = false;
-               break;
-            case "close spotify":
-               new Thread(new ExecuteRackCommandRunnable("pkill spotify", this, false)).start(); 
-               break;
-            case "close server":
-                UtilitiesClass.getInstance().CloseService(this);
-                System.exit(0);
-                break;
-                    
-            default:
-                if(command.length()>=7 && command.substring(0,7).equals("firefox"))
-                {
-                    firefoxRunning = true;
-                    new Thread(new ExecuteRackCommandRunnable(command, this, false)).start();
-                    //UtilitiesClass.getInstance().SetFullScreen();
-                    //overlay= new Overlay(this);       
-                }
-                else
-                {
-                    new Thread(new ExecuteRackCommandRunnable(command, this, true)).start();
-                }
-                break;
-        }
-        //frame.commandLineText.append(command + "\n");
-        //frame.commandLineText.append(command.substring(0,12) + "\n");
-        
     }
     
     public void RemoveClientFromList(String ip)

@@ -95,7 +95,6 @@ public final class UtilitiesClass
             } 
             catch (Exception e) 
             {
-                context.WriteToAllClients("p1-unable");
                 context.frame.tratPiLabel.setForeground(Color.RED);
                 context.getDevicesManager().setConnectedToP1(false);
                 return false;
@@ -120,7 +119,6 @@ public final class UtilitiesClass
             } catch (Exception e)
             {
                 context.getDevicesManager().setConnectedToP2(false);
-                context.WriteToAllClients("p2-unable");
                 context.frame.guizPiLabel.setForeground(Color.RED);
                 return false;
             }

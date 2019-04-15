@@ -43,16 +43,14 @@ public class ClientRunnable implements Runnable
         {
             do
             {
-                sentence = inFromClient.readLine();   
-
-                
+                sentence = inFromClient.readLine();  
                 if(!sentence.equals("disconnecting"))
                     server.frame.commandLineText.append("Command received: " + sentence + "\n");
                 
                 //Rack command
                 if(sentence.length()>=5  && sentence.substring(0,5).equals("rack-"))
                 {
-                    server.CheckCommandToExecuteOnRack(sentence.substring(5));
+                    new Thread(new ExecuteRackCommandRunnable(sentence.substring(5), server)).start();
                 }
                 //Sentence for Pi1
                 else if(UtilitiesClass.getInstance().ToPi1(sentence))
@@ -96,13 +94,13 @@ public class ClientRunnable implements Runnable
                         server.getDevicesManager().WriteToArduino(command);
                     }
                 }
-              
+                
             } while(!sentence.equals("disconnecting"));
             CloseConnection();
         }
         catch(Exception e)
         {
-            server.frame.commandLineText.append("Client thread crashed");
+            server.frame.commandLineText.append("Client thread crashed\n");
             CloseConnection();
         }       
     }
