@@ -101,6 +101,8 @@ public class Server implements Runnable
                     String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
                     if(clientsList.containsKey(ipString))
                     {
+                        ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
+                        clientRunnable.WriteToClient("serverdown");
                         androidSocket.close();
                     }
                     else
