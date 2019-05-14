@@ -11,7 +11,6 @@ import rackserver.UI.RackServerFrame;
 import rackserver.UI.Overlay;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.PrintWriter;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -26,7 +25,7 @@ public class Server implements Runnable
     private DevicesManager devicesManager = null;
     public DevicesManager getDevicesManager() {return devicesManager;}
     
-    private Map<String,ClientRunnable> clientsList;
+    private final Map<String,ClientRunnable> clientsList;
     public int getNumberOfConnectedClients() {return clientsList.size();}
 
     public RackServerFrame frame;
@@ -52,7 +51,8 @@ public class Server implements Runnable
     
     public Server(RackServerFrame frame) 
     {
-        this.frame = frame; instance = this;
+        this.frame = frame; 
+        instance = this;
         clientsList = new HashMap<>();
     }
     
@@ -99,18 +99,18 @@ public class Server implements Runnable
                     //commandLineText.append("Waiting for clients connection...\n");
                     androidSocket = serverSocket.accept();
                     String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
-                    if(clientsList.containsKey(ipString))
-                    {
-                        ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
-                        clientRunnable.WriteToClient("serverdown");
-                        androidSocket.close();
-                    }
-                    else
+                    if(!clientsList.containsKey(ipString))
                     {
                         frame.connectedClientText.append(ipString + "\n");                    
                         ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
                         new Thread(clientRunnable).start();                    
                         clientsList.put(ipString, clientRunnable);
+                    }
+                    else
+                    {
+                        frame.commandLineText.append("Same client tried to connect, disconnecting it...\n");
+                        ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
+                        clientRunnable.WriteToClient("serverdown");
                     }
                    
                 }while(true);
@@ -134,6 +134,9 @@ public class Server implements Runnable
     
     public void RemoveClientFromList(String ip)
     {
+        String text = frame.connectedClientText.getText();
+        text = text.replaceAll(ip + "\n", "");
+        frame.connectedClientText.setText(text.replaceAll(ip, ""));
         clientsList.remove(ip);
     }
     
