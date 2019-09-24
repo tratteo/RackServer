@@ -21,6 +21,7 @@ public class RackServerFrame extends javax.swing.JFrame
     public RackServerFrame() 
     {
         initComponents();  
+        getContentPane().setBackground(new Color(45,40,40));
         DefaultCaret caret = (DefaultCaret)commandLineText.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         tratPiLabel.setForeground(Color.RED);
@@ -55,7 +56,8 @@ public class RackServerFrame extends javax.swing.JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rack Server");
-        setBackground(new java.awt.Color(51, 51, 255));
+        setAutoRequestFocus(false);
+        setBackground(new java.awt.Color(102, 0, 102));
         setIconImages(null);
         setResizable(false);
         setSize(new java.awt.Dimension(1360, 500));
@@ -63,7 +65,7 @@ public class RackServerFrame extends javax.swing.JFrame
         commandLineScroll.setToolTipText("");
 
         commandLineText.setEditable(false);
-        commandLineText.setBackground(new java.awt.Color(255, 244, 229));
+        commandLineText.setBackground(new java.awt.Color(255, 185, 99));
         commandLineText.setColumns(20);
         commandLineText.setFont(new Font("Droid Sans Mono", Font.PLAIN, 20));
         commandLineText.setRows(5);
@@ -72,6 +74,7 @@ public class RackServerFrame extends javax.swing.JFrame
         commandLineScroll.setViewportView(commandLineText);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(210, 210, 210));
         jLabel1.setText("Connnected Pi:");
 
         guizPiLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
@@ -83,18 +86,21 @@ public class RackServerFrame extends javax.swing.JFrame
         tratPiLabel.setText("TratPi");
 
         clockLabel.setFont(new java.awt.Font("Arial", 2, 48)); // NOI18N
+        clockLabel.setForeground(new java.awt.Color(210, 210, 210));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(210, 210, 210));
         jLabel2.setText("Inside Temperature:");
 
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(210, 210, 210));
         jLabel3.setText("Client Connected:");
 
         clientsScrollArea.setBackground(new java.awt.Color(102, 255, 255));
         clientsScrollArea.setAutoscrolls(true);
 
         connectedClientText.setEditable(false);
-        connectedClientText.setBackground(new java.awt.Color(204, 255, 204));
+        connectedClientText.setBackground(new java.awt.Color(255, 185, 99));
         connectedClientText.setColumns(20);
         connectedClientText.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         connectedClientText.setRows(5);
@@ -104,11 +110,14 @@ public class RackServerFrame extends javax.swing.JFrame
         temperatureLabel.setFont(new java.awt.Font("Dialog", 0, 40)); // NOI18N
         temperatureLabel.setText("0°");
 
+        exitLabel.setForeground(new java.awt.Color(200, 200, 200));
         exitLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit_18dp.png"))); // NOI18N
 
+        minimizeLabel.setForeground(new java.awt.Color(200, 200, 200));
         minimizeLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minimize_18dp.png"))); // NOI18N
 
         arduinoLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        arduinoLabel.setForeground(new java.awt.Color(210, 210, 210));
         arduinoLabel.setText("Arduino Status:");
 
         arduinoStatusLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
