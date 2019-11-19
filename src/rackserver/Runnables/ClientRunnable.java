@@ -11,9 +11,9 @@ import rackserver.UtilitiesClass;
 public class ClientRunnable implements Runnable
 {
     //Context
-    private Socket socket;
-    private Server server;
-    private String ip;
+    public Socket socket;
+    public Server server;
+    public String ip;
     
     //Communication
     private PrintWriter outToClient;
@@ -35,6 +35,8 @@ public class ClientRunnable implements Runnable
             inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
         catch(Exception e) {}
+        UtilitiesClass.getInstance().WriteToClientDevicesStatus(this);
+        
     }
     
     @Override
@@ -49,8 +51,24 @@ public class ClientRunnable implements Runnable
                 assert(sentence != null);
                 if(!sentence.equals("disconnecting"))
                 {
-                    server.frame.commandLineText.append("Command received: " + sentence + "\n");
+                    server.frame.commandLineText.append(ip+" : " + sentence + "\n");
 
+                    if(sentence.equals("stream-on"))
+                    {
+                        if(server.camStream == null || (server.camStream != null && !server.camStream.isRunning()))
+                        {
+                            server.camStream = new CamStreamRunnable(server, this);
+                            new Thread(server.camStream).start();
+                        }
+                                         
+                    }
+                    if(sentence.equals("stream-off"))
+                    {
+                        if(server.camStream != null)
+                        {
+                            server.camStream.kill();
+                        }
+                    }
                     //Rack command
                     if(sentence.length()>=5  && sentence.substring(0,5).equals("rack-"))
                     {
