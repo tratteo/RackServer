@@ -23,6 +23,7 @@ public class ConnectPisRunnable implements Runnable
     {
         while(!p1Connected || !p2Connected)
         {
+            System.out.println("Connecting");
             p1Connected = UtilitiesClass.getInstance().ConnectPi("p1", context);
             p2Connected = UtilitiesClass.getInstance().ConnectPi("p2", context);
             try{Thread.sleep(30000);}catch(InterruptedException ignored){}

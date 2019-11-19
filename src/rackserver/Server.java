@@ -22,7 +22,8 @@ import rackserver.Runnables.ClientRunnable;
  */
 public class Server implements Runnable
 {   
-    private DevicesManager devicesManager = null;
+    public CamStreamRunnable camStream;
+    public DevicesManager devicesManager = null;
     public DevicesManager getDevicesManager() {return devicesManager;}
     
     private final Map<String,ClientRunnable> clientsList;
@@ -96,22 +97,12 @@ public class Server implements Runnable
             {
                 do
                 {
-                    //commandLineText.append("Waiting for clients connection...\n");
                     androidSocket = serverSocket.accept();
                     String ipString = androidSocket.getInetAddress().toString().substring(1, androidSocket.getInetAddress().toString().length());
-                    if(!clientsList.containsKey(ipString))
-                    {
-                        frame.connectedClientText.append(ipString + "\n");                    
-                        ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
-                        new Thread(clientRunnable).start();                    
-                        clientsList.put(ipString, clientRunnable);
-                    }
-                    else
-                    {
-                        frame.commandLineText.append("Same client tried to connect, disconnecting it...\n");
-                        ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
-                        clientRunnable.WriteToClient("serverdown");
-                    }
+                    frame.connectedClientText.append(ipString + "\n");                    
+                    ClientRunnable clientRunnable = new ClientRunnable(androidSocket, this);
+                    new Thread(clientRunnable).start();                    
+                    clientsList.put(ipString, clientRunnable);
                    
                 }while(true);
             }

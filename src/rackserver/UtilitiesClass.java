@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
 import java.net.*;
+import rackserver.Runnables.ClientRunnable;
 
 /**
  *
@@ -77,50 +78,66 @@ public final class UtilitiesClass
     
     public synchronized boolean ConnectPi(String pi, Server context)
     {
-        if(pi.equals("p1") && !context.getDevicesManager().isConnectedToP1())
+        if(pi.equals("p1"))
         {
-            try 
-            { 
-                context.p1Socket = new Socket();
-                context.p1Socket.connect(new InetSocketAddress("192.168.1.100", 5555), 1500);
-                context.getDevicesManager().outToP1 = new PrintWriter(context.p1Socket.getOutputStream());
-                Thread p1Listener = new Thread(new ListenerP1Runnable(context.p1Socket, context));
-                context.frame.tratPiLabel.setForeground(new Color(80, 255, 70));
-                context.frame.commandLineText.append("Pi 1 connected\n");
-                context.getDevicesManager().setConnectedToP1(true);
-                context.WriteToAllClients("p1-connected");
-                p1Listener.start();
-                return true;
-
-            } 
-            catch (Exception e) 
+            if(!context.getDevicesManager().isConnectedToP1())
             {
-                context.frame.tratPiLabel.setForeground(Color.RED);
-                context.getDevicesManager().setConnectedToP1(false);
-                return false;
+                try 
+                { 
+                    context.p1Socket = new Socket();
+                    context.p1Socket.connect(new InetSocketAddress("192.168.1.100", 5555), 1500);
+                    context.getDevicesManager().outToP1 = new PrintWriter(context.p1Socket.getOutputStream());
+                    Thread p1Listener = new Thread(new ListenerP1Runnable(context.p1Socket, context));
+                    context.frame.tratPiLabel.setForeground(new Color(80, 255, 70));
+                    context.frame.commandLineText.append("Pi 1 connected\n");
+                    context.getDevicesManager().setConnectedToP1(true);
+                    context.WriteToAllClients("p1-connected");
+                    p1Listener.start();
+                    return true;
+
+                } 
+                catch (Exception e) 
+                {
+                    context.frame.tratPiLabel.setForeground(Color.RED);
+                    context.WriteToAllClients("p1-interrupt");
+                    context.getDevicesManager().setConnectedToP1(false);
+                    return false;
+                }
+            }
+            else
+            {
+                context.WriteToAllClients("p1-connected");
             }
         }
 
-        else if(pi.equals("p2") && !context.getDevicesManager().isConnectedToP2())
+        else if(pi.equals("p2"))
         {
-            try 
+            if(!context.getDevicesManager().isConnectedToP2())
             {
-                context.p2Socket = new Socket();
-                context.p2Socket.connect(new InetSocketAddress("192.168.1.187", 6666), 1500);
-                context.getDevicesManager().outToP2 = new PrintWriter(context.p2Socket.getOutputStream());
-                Thread p2Listener = new Thread(new ListenerP2Runnable(context.p2Socket, context));
-                p2Listener.start();
-                context.frame.guizPiLabel.setForeground(new Color(80, 255, 70));
-                context.frame.commandLineText.append("Pi 2 connected\n");
-                context.getDevicesManager().setConnectedToP2(true);
-                context.WriteToAllClients("p2-connected");
-                return true;
+                try 
+                {
+                    context.p2Socket = new Socket();
+                    context.p2Socket.connect(new InetSocketAddress("192.168.1.187", 6666), 1500);
+                    context.getDevicesManager().outToP2 = new PrintWriter(context.p2Socket.getOutputStream());
+                    Thread p2Listener = new Thread(new ListenerP2Runnable(context.p2Socket, context));
+                    p2Listener.start();
+                    context.frame.guizPiLabel.setForeground(new Color(80, 255, 70));
+                    context.frame.commandLineText.append("Pi 2 connected\n");
+                    context.getDevicesManager().setConnectedToP2(true);
+                    context.WriteToAllClients("p2-connected");
+                    return true;
 
-            } catch (Exception e)
+                } catch (Exception e)
+                {
+                    context.WriteToAllClients("p2-interrupt");
+                    context.getDevicesManager().setConnectedToP2(false);
+                    context.frame.guizPiLabel.setForeground(Color.RED);
+                    return false;
+                }
+            }
+            else
             {
-                context.getDevicesManager().setConnectedToP2(false);
-                context.frame.guizPiLabel.setForeground(Color.RED);
-                return false;
+                context.WriteToAllClients("p2-connected");
             }
         }
         return false;
@@ -148,6 +165,36 @@ public final class UtilitiesClass
                 context.getDevicesManager().setConnectedToP2(false);
                 context.p2Socket = null;
             } catch (Exception e) {}
+        }
+    }
+    
+    public synchronized void WriteToClientDevicesStatus(ClientRunnable client)
+    {
+        if(client.server.devicesManager.isConnectedToArduino())
+        {
+            client.WriteToClient("ar-connected");
+        }
+        else
+        {
+            client.WriteToClient("ar-interrupt");
+        }
+        
+        if(client.server.devicesManager.isConnectedToP1())
+        {
+            client.WriteToClient("p1-connected");
+        }
+        else
+        {
+            client.WriteToClient("p1-interrupt");
+        }
+                
+        if(client.server.devicesManager.isConnectedToP2())
+        {
+            client.WriteToClient("p2-connected");
+        }
+        else
+        {
+            client.WriteToClient("p2-interrupt");
         }
     }
     
