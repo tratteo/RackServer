@@ -36,9 +36,9 @@ public class CamStreamRunnable implements Runnable
     {
         this.server = server;
         this.client = client;
-        packetSize = 3600;
-        packetNumber = 4;
-        waitTime = (1000 / 20) / packetNumber;
+        packetSize = 4096;
+        packetNumber = 5;
+        waitTime = (1000 / 15) / packetNumber;
     }
     
         @Override
@@ -69,7 +69,7 @@ public class CamStreamRunnable implements Runnable
                 byte[] frameData = baos.toByteArray();
                 if(frameData.length >= (packetNumber * (packetSize - 5)))
                 {
-                    server.frame.commandLineText.append("Can't start stream with this protocol");
+                    server.frame.commandLineText.append("Can't start stream with this protocol\n");
                     stop = true;
                     return;
                 }
